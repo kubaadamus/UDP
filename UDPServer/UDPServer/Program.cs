@@ -15,11 +15,17 @@ namespace UDPServer
         public static string ip;
         public static int count = 0;
         public static int port = 16010;
+        public static string StringToSend = "";
         
         static void Main(string[] args)
         {
-
-                GetInfo();
+            for (int i = 0; i < 62500; i++)
+            {
+                StringToSend += "a";
+            }
+            Console.WriteLine(StringToSend.Length);
+            Thread.Sleep(2000);
+            GetInfo();
 
                 while (true)
                 {
@@ -27,18 +33,20 @@ namespace UDPServer
                     {
                         count++;
                         Console.WriteLine($"{count} Packets have been sent");
-                    Thread.Sleep(30);
+                    Thread.Sleep(10);
                     }
                     else
                     {
                         Console.WriteLine($"Error whule sending packet!", ConsoleColor.Red);
                     Thread.Sleep(30);
                 }
-                    if(count>=10000)
+                    if(count>=1000)
                 {
                     break;
                 }
                 }
+            Console.WriteLine("SKONCZYLEM!");
+            Console.ReadLine();
             
         }
         public static void GetInfo()
@@ -51,8 +59,9 @@ namespace UDPServer
         }
         public static bool Send()
         {
+
             
-            byte[] packetdata = Encoding.ASCII.GetBytes("0123456789");
+            byte[] packetdata = Encoding.ASCII.GetBytes(StringToSend);
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
             Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
