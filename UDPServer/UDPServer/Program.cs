@@ -27,12 +27,12 @@ namespace UDPServer
                     {
                         count++;
                         Console.WriteLine($"{count} Packets have been sent");
-                    Thread.Sleep(5);
+                    Thread.Sleep(30);
                     }
                     else
                     {
                         Console.WriteLine($"Error whule sending packet!", ConsoleColor.Red);
-                    Thread.Sleep(5);
+                    Thread.Sleep(30);
                 }
                     if(count>=10000)
                 {
@@ -51,7 +51,8 @@ namespace UDPServer
         }
         public static bool Send()
         {
-            byte[] packetdata = new byte[10000];
+            
+            byte[] packetdata = Encoding.ASCII.GetBytes("0123456789");
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
             Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
