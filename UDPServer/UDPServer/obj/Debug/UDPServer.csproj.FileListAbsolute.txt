@@ -1,0 +1,7 @@
+C:\Users\Kuba\Desktop\UDP\UDPServer\UDPServer\obj\Debug\UDPServer.csprojAssemblyReference.cache
+C:\Users\Kuba\Desktop\UDP\UDPServer\UDPServer\obj\Debug\UDPServer.csproj.CoreCompileInputs.cache
+C:\Users\Kuba\Desktop\UDP\UDPServer\UDPServer\bin\Debug\UDPServer.exe.config
+C:\Users\Kuba\Desktop\UDP\UDPServer\UDPServer\bin\Debug\UDPServer.exe
+C:\Users\Kuba\Desktop\UDP\UDPServer\UDPServer\bin\Debug\UDPServer.pdb
+C:\Users\Kuba\Desktop\UDP\UDPServer\UDPServer\obj\Debug\UDPServer.exe
+C:\Users\Kuba\Desktop\UDP\UDPServer\UDPServer\obj\Debug\UDPServer.pdb
