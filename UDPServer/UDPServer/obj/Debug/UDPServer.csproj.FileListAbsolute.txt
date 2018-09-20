@@ -18,3 +18,4 @@ C:\Users\Kuba\OneDrive\UDP\UDPServer\UDPServer\bin\Debug\AForge.Video.xml
 C:\Users\Kuba\OneDrive\UDP\UDPServer\UDPServer\bin\Debug\AForge.Video.DirectShow.xml
 C:\Users\Kuba\OneDrive\UDP\UDPServer\UDPServer\bin\Debug\AForge.xml
 C:\Users\Kuba\OneDrive\UDP\UDPServer\UDPServer\obj\Debug\UDPServer.csproj.CopyComplete
+C:\Users\Kuba\OneDrive\UDP\UDPServer\UDPServer\obj\Debug\UDPServer.csprojAssemblyReference.cache

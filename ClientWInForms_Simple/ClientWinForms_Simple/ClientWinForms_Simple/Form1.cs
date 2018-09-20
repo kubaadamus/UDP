@@ -18,62 +18,46 @@ namespace ClientWinForms_Simple
     public partial class Form1 : Form
     {
         delegate void ShowMessageMethod(byte[] msg);
-
-        UdpClient _server = null;
-        IPEndPoint _client = null;
-        Thread _listenThread = null;
-        private bool _isServerStarted = false;
-        public Form1() // 188054
+        UdpClient client = null;
+        IPEndPoint endpoint = null;
+        Thread listenThread = null;
+        private bool isServerStarted = false;
+        public Form1()
         {
             InitializeComponent();
-
-            if (_isServerStarted)
-            {
-                Stop();
-            }
-            else
-            {
-                Start();
-            }
+            if (isServerStarted){Stop();}else{Start();}
         }
         private void serverMsgBox_Load(object sender, EventArgs e)
         {
         }
-
         private void btStart_Click(object sed, EventArgs e)
         {
 
         }
-
         private void Start()
         {
             //Create the server.
             IPEndPoint serverEnd = new IPEndPoint(IPAddress.Any, 16010);
-            _server = new UdpClient(serverEnd);
+            client = new UdpClient(serverEnd);
             //ShowMsg("Waiting for a client...");
             //Create the client end.
-            _client = new IPEndPoint(IPAddress.Any, 16010);
+            endpoint = new IPEndPoint(IPAddress.Any, 16010);
 
             //Start listening.
             Thread listenThread = new Thread(new ThreadStart(Listening));
             listenThread.Start();
             //Change state to indicate the server starts.
-            _isServerStarted = true;
+            isServerStarted = true;
         }
-
         private void Stop()
         {
-
                 //Stop listening.
-                _listenThread.Join();
+                listenThread.Join();
                 //ShowMsg("Server stops.");
-                _server.Close();
+                client.Close();
                 //Changet state to indicate the server stops.
-                _isServerStarted = false;
-
-
+                isServerStarted = false;
         }
-
         private void Listening()
         {
             byte[] data;
@@ -81,17 +65,15 @@ namespace ClientWinForms_Simple
             while (true)
             {
                 //receieve a message form a client.
-                data = _server.Receive(ref _client);
-                //string receivedMsg = Encoding.ASCII.GetString(data, 0, data.Length);
+                data = client.Receive(ref endpoint);
                 //Show the message.
                 this.Invoke(new ShowMessageMethod(ShowMsg),data);
                 //Send a response message.
-                //data = Encoding.ASCII.GetBytes("Server:" + receivedMsg);
-                _server.Send(data, data.Length, _client);
+                //data = Encoding.ASCII.GetBytes("Dostalem!");
+                //client.Send(data, data.Length, endpoint);
                 //Sleep for UI to work.;
             }
         }
-
         private void ShowMsg(byte[] msg)
         {
             //Console.WriteLine("mam!" + msg[0]);
@@ -103,6 +85,12 @@ namespace ClientWinForms_Simple
             Image image = imageConverter.ConvertFrom(byteArrayIn) as Image;
 
             return image;
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            byte[] data = Encoding.ASCII.GetBytes("Dostalem!!!!!");
+            client.Send(data, data.Length, endpoint);
         }
     }
 }
