@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2026
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientWinForms_Simple", "ClientWinForms_Simple\ClientWinForms_Simple.csproj", "{A5D25011-6F57-43F7-A02C-2A3B0CE4D346}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UDPClient", "ClientWinForms_Simple\UDPClient.csproj", "{A5D25011-6F57-43F7-A02C-2A3B0CE4D346}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

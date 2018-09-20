@@ -12,6 +12,7 @@ using AForge.Video.DirectShow;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using System.IO.Ports;
 
 namespace UDPServer
 {
@@ -20,7 +21,12 @@ namespace UDPServer
         public static IPEndPoint ep = new IPEndPoint(IPAddress.Parse("89.229.95.152"), 16010);
         public static Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         public static byte[] ImageArray; // Tablica która zostanie zapełniona danymi z kamerki i wyslana w sieć
-        static void Main(string[] args)
+            //zmienne portu com//
+            public static SerialPort serial1;
+            public static string inString = "";
+            public static string myString = "";
+            //=================//
+        public static void Main(string[] args)
         {
             Instantiate();
             Thread.Sleep(1000);
@@ -32,7 +38,9 @@ namespace UDPServer
                     {
                         byte[] risiw = new byte[20];
                         sock.Receive(risiw);
-                        Console.WriteLine(Encoding.ASCII.GetString(risiw));
+                        string StringDlaArduino = Encoding.ASCII.GetString(risiw);
+                        Console.WriteLine(StringDlaArduino);
+                        WyslijDoArduino(StringDlaArduino);
                     }
                     catch (Exception)
                     {
@@ -61,8 +69,48 @@ namespace UDPServer
             Send(ImageArray);
             { }
         }
+        public static void InicjalizujSerial()
+        {
+
+            serial1 = new SerialPort();
+            serial1.PortName = "COM4";
+            serial1.Parity = Parity.None;
+            serial1.BaudRate = 115200;
+            serial1.DataBits = 8;
+            serial1.StopBits = StopBits.One;
+            if (!serial1.IsOpen && serial1 != null)
+            {
+                serial1.Open();
+                serial1.ReadTimeout = 2000;
+                serial1.WriteTimeout = 1000;
+            }
+            serial1.BaseStream.Flush();
+            serial1.DiscardInBuffer();
+            serial1.DiscardOutBuffer();
+        }
+        public static void WyslijDoArduino(string inputString)
+        {
+            serial1.Write(inputString);
+
+        }
+
+        public static void port_OnReceiveDatazz(object sender,
+                                          SerialDataReceivedEventArgs e)
+        {
+
+            byte[] buf = new byte[serial1.BytesToRead];
+            serial1.Read(buf, 0, buf.Length);
+            myString = System.Text.Encoding.ASCII.GetString(buf).Trim();
+            Console.WriteLine("Odebrano z arduino: " + myString);
+
+        }
         public static void Instantiate()
         {
+            InicjalizujSerial();
+            //Przypisanie eventu do serial portu//
+            serial1.DataReceived += new SerialDataReceivedEventHandler(port_OnReceiveDatazz);
+            //=================================//
+
             videoDevicesList = new FilterInfoCollection(FilterCategory.VideoInputDevice);
             foreach (FilterInfo videoDevice in videoDevicesList)
             {

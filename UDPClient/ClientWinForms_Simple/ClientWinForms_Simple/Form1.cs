@@ -89,7 +89,13 @@ namespace ClientWinForms_Simple
 
         private void button1_Click(object sender, EventArgs e)
         {
-            byte[] data = Encoding.ASCII.GetBytes("Dostalem!!!!!");
+            byte[] data = Encoding.ASCII.GetBytes("a");
+            client.Send(data, data.Length, endpoint);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            byte[] data = Encoding.ASCII.GetBytes("b");
             client.Send(data, data.Length, endpoint);
         }
     }
