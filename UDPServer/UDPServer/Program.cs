@@ -25,24 +25,27 @@ namespace UDPServer
         public static IPEndPoint ep = new IPEndPoint(IPAddress.Parse("89.229.95.152"), 16010);
         public static Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         public static int delay = 10;
+        public static byte[] ImageArray;
 
         //ZMIENNE KAMERKI
         public static FilterInfoCollection videoDevicesList;
         public static IVideoSource videoSource;
-        public static byte[] BitmapaArrayClamped = new byte[62500];
         public static void video_NewFrame(object sender, NewFrameEventArgs eventArgs)
         {
             Bitmap bitmap = (Bitmap)eventArgs.Frame.Clone();
+            Bitmap resized = new Bitmap(bitmap, new Size(bitmap.Width / 4, bitmap.Height / 4));
+            Image i = (Image)resized;
+            ImageArray = ImageToByteArray(i);
+            Image imidz = byteArrayToImage(ImageArray);
+            Send(ImageArray);
+            { }
+        }
+        public static Image byteArrayToImage(byte[] byteArrayIn)
+        {
+            ImageConverter imageConverter = new System.Drawing.ImageConverter();
+            Image image = imageConverter.ConvertFrom(byteArrayIn) as Image;
 
-            byte[] BitmapaArray = BitmapToByteArray(bitmap);
-            
-
-            for(int i=0; i<BitmapaArrayClamped.Length; i++)
-            {
-                BitmapaArrayClamped[i] = BitmapaArray[i];
-            }
-            //Console.WriteLine("NewFrame!");
-
+            return image;
         }
         public static void Instantiate()
         {
@@ -87,16 +90,24 @@ namespace UDPServer
             }
 
         }
+        public static byte[] ImageToByteArray(System.Drawing.Image imageIn)
+        {
+            using (var ms = new MemoryStream())
+            {
+                imageIn.Save(ms, ImageFormat.Bmp);
+                return ms.ToArray();
+            }
+        }
         static void Main(string[] args)
         {
             Instantiate();
             Thread.Sleep(5000);
                 while (true)
                 {
-                    if (Send(BitmapaArrayClamped))
+                    if (Send(ImageArray))
                     {
                         count++;
-                        Console.WriteLine($"{count} Packets have been sent, B:" + BitmapaArrayClamped[0] + " G:"+ BitmapaArrayClamped[1]+" R:"+BitmapaArrayClamped[2]);
+                        Console.WriteLine($"{count} Packets have been sent, B:" + ImageArray[0] + " G:"+ ImageArray[1]+" R:"+ ImageArray[2]);
                     Thread.Sleep(delay); // 25Hz
                     }
                     else
