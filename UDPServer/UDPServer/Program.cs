@@ -38,9 +38,58 @@ namespace UDPServer
                     {
                         byte[] risiw = new byte[20];
                         sock.Receive(risiw);
-                        string StringDlaArduino = Encoding.ASCII.GetString(risiw);
-                        Console.WriteLine(StringDlaArduino);
-                        WyslijDoArduino(StringDlaArduino);
+                        string StringOdKlienta = Encoding.ASCII.GetString(risiw);
+                        Console.WriteLine("String od klienta: "+StringOdKlienta + " " + StringOdKlienta.Length);
+                        WyslijDoArduino(StringOdKlienta);
+
+                        //REAKCJA PROGRAMU NA STRING OTRZYMANY OD KLIENTA
+                        if(StringOdKlienta.Contains("cam0"))
+                        {
+                            try
+                            {
+                                videoSource.Stop();
+                                videoSource = new VideoCaptureDevice(videoDevicesList[0].MonikerString);
+                                videoSource.NewFrame += new NewFrameEventHandler(video_NewFrame);
+                                videoSource.Start();
+                                Console.WriteLine("kamerka wybrana: " + videoDevicesList[0].Name);
+                            }
+                            catch (Exception)
+                            {
+                                
+                            }
+
+                        }
+                        if (StringOdKlienta.Contains("cam1"))
+                        {
+                            try
+                            {
+                                videoSource.Stop();
+                                videoSource = new VideoCaptureDevice(videoDevicesList[1].MonikerString);
+                                videoSource.NewFrame += new NewFrameEventHandler(video_NewFrame);
+                                videoSource.Start();
+                                Console.WriteLine("kamerka wybrana: " + videoDevicesList[1].Name);
+                            }
+                            catch (Exception)
+                            {
+                            }
+
+                        }
+                        if (StringOdKlienta.Contains("cam3"))
+                        {
+                            try
+                            {
+                                videoSource.Stop();
+                                videoSource = new VideoCaptureDevice(videoDevicesList[3].MonikerString);
+                                videoSource.NewFrame += new NewFrameEventHandler(video_NewFrame);
+                                videoSource.Start();
+                                Console.WriteLine("kamerka wybrana: " + videoDevicesList[2].Name);
+                            }
+                            catch (Exception)
+                            {
+                            }
+
+                        }
+
                     }
                     catch (Exception)
                     {
@@ -73,7 +122,7 @@ namespace UDPServer
         {
 
             serial1 = new SerialPort();
-            serial1.PortName = "COM4";
+            serial1.PortName = "COM3";
             serial1.Parity = Parity.None;
             serial1.BaudRate = 115200;
             serial1.DataBits = 8;

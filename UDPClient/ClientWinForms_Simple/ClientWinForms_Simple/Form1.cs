@@ -22,6 +22,10 @@ namespace ClientWinForms_Simple
         IPEndPoint endpoint = null;
         Thread listenThread = null;
         private bool isServerStarted = false;
+        bool W = true;
+        bool S = true;
+        bool A = true;
+        bool D = true;
         public Form1()
         {
             InitializeComponent();
@@ -89,14 +93,31 @@ namespace ClientWinForms_Simple
 
         private void button1_Click(object sender, EventArgs e)
         {
-            byte[] data = Encoding.ASCII.GetBytes("a");
+            byte[] data = Encoding.ASCII.GetBytes("cam0");
             client.Send(data, data.Length, endpoint);
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            byte[] data = Encoding.ASCII.GetBytes("b");
+            byte[] data = Encoding.ASCII.GetBytes("cam1");
             client.Send(data, data.Length, endpoint);
+        }
+
+        private void textBox1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.W && W) { W = false; Wbutton.Enabled = false; byte[] data = Encoding.ASCII.GetBytes("w"); client.Send(data, data.Length, endpoint); }
+            if (e.KeyCode == Keys.S && S) { S = false; Sbutton.Enabled = false; byte[] data = Encoding.ASCII.GetBytes("s"); client.Send(data, data.Length, endpoint); }
+            if (e.KeyCode == Keys.A && A) { A = false; Abutton.Enabled = false; byte[] data = Encoding.ASCII.GetBytes("a"); client.Send(data, data.Length, endpoint); }
+            if (e.KeyCode == Keys.D && D) { D = false; Dbutton.Enabled = false; byte[] data = Encoding.ASCII.GetBytes("d"); client.Send(data, data.Length, endpoint); }
+            textBox1.Clear();
+        }
+
+        private void textBox1_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.W) { W = true; Wbutton.Enabled = true; byte[] data = Encoding.ASCII.GetBytes("w_stop"); client.Send(data, data.Length, endpoint); }
+            if (e.KeyCode == Keys.S) { S = true; Sbutton.Enabled = true; byte[] data = Encoding.ASCII.GetBytes("s_stop"); client.Send(data, data.Length, endpoint); }
+            if (e.KeyCode == Keys.A) { A = true; Abutton.Enabled = true; byte[] data = Encoding.ASCII.GetBytes("a_stop"); client.Send(data, data.Length, endpoint); }
+            if (e.KeyCode == Keys.D) { D = true; Dbutton.Enabled = true; byte[] data = Encoding.ASCII.GetBytes("d_stop"); client.Send(data, data.Length, endpoint); }
         }
     }
 }
