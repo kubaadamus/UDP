@@ -24,7 +24,7 @@ namespace UDPServer
         public static byte[] packetdata;
         public static IPEndPoint ep = new IPEndPoint(IPAddress.Parse("89.229.95.152"), 16010);
         public static Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-        public static int delay = 10;
+        public static int delay = 1000;
         public static byte[] ImageArray;
 
         //ZMIENNE KAMERKI
@@ -33,7 +33,7 @@ namespace UDPServer
         public static void video_NewFrame(object sender, NewFrameEventArgs eventArgs)
         {
             Bitmap bitmap = (Bitmap)eventArgs.Frame.Clone();
-            Bitmap resized = new Bitmap(bitmap, new Size(bitmap.Width / 4, bitmap.Height / 4));
+            Bitmap resized = new Bitmap(bitmap, new Size(bitmap.Width / 3, bitmap.Height / 3));
             Image i = (Image)resized;
             ImageArray = ImageToByteArray(i);
             Image imidz = byteArrayToImage(ImageArray);
@@ -107,12 +107,12 @@ namespace UDPServer
                     if (Send(ImageArray))
                     {
                         count++;
-                        Console.WriteLine($"{count} Packets have been sent, B:" + ImageArray[0] + " G:"+ ImageArray[1]+" R:"+ ImageArray[2]);
+                        //Console.WriteLine($"{count} Packets have been sent, B:" + ImageArray[0] + " G:"+ ImageArray[1]+" R:"+ ImageArray[2]);
                     Thread.Sleep(delay); // 25Hz
                     }
                     else
                     {
-                        Console.WriteLine($"Error whule sending packet!", ConsoleColor.Red);
+                        //Console.WriteLine($"Error whule sending packet!", ConsoleColor.Red);
                     Thread.Sleep(delay); 
                 }
 

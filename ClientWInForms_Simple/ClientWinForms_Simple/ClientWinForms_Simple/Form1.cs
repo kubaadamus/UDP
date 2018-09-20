@@ -26,10 +26,18 @@ namespace ClientWinForms_Simple
         public Form1() // 188054
         {
             InitializeComponent();
+
+            if (_isServerStarted)
+            {
+                Stop();
+            }
+            else
+            {
+                Start();
+            }
         }
         private void serverMsgBox_Load(object sender, EventArgs e)
         {
-            this.btStart.Text = "StartServer";
         }
 
         private void btStart_Click(object sed, EventArgs e)
@@ -86,7 +94,7 @@ namespace ClientWinForms_Simple
 
         private void ShowMsg(byte[] msg)
         {
-            Console.WriteLine("mam!" + msg[0]);
+            //Console.WriteLine("mam!" + msg[0]);
             pictureBox1.Image = byteArrayToImage(msg);
         }
         public static Image byteArrayToImage(byte[] byteArrayIn)
@@ -95,19 +103,6 @@ namespace ClientWinForms_Simple
             Image image = imageConverter.ConvertFrom(byteArrayIn) as Image;
 
             return image;
-        }
-        private void btStart_Click_1(object sender, EventArgs e)
-        {
-            if (_isServerStarted)
-            {
-                Stop();
-                btStart.Text = "StartServer";
-            }
-            else
-            {
-                Start();
-                btStart.Text = "StopServer";
-            }
         }
     }
 }
