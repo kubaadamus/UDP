@@ -5,3 +5,16 @@ C:\Users\Kuba\Desktop\UDP\UDPServer\UDPServer\bin\Debug\UDPServer.exe
 C:\Users\Kuba\Desktop\UDP\UDPServer\UDPServer\bin\Debug\UDPServer.pdb
 C:\Users\Kuba\Desktop\UDP\UDPServer\UDPServer\obj\Debug\UDPServer.exe
 C:\Users\Kuba\Desktop\UDP\UDPServer\UDPServer\obj\Debug\UDPServer.pdb
+C:\Users\Kuba\OneDrive\UDP\UDPServer\UDPServer\bin\Debug\UDPServer.exe.config
+C:\Users\Kuba\OneDrive\UDP\UDPServer\UDPServer\bin\Debug\UDPServer.exe
+C:\Users\Kuba\OneDrive\UDP\UDPServer\UDPServer\bin\Debug\UDPServer.pdb
+C:\Users\Kuba\OneDrive\UDP\UDPServer\UDPServer\obj\Debug\UDPServer.csproj.CoreCompileInputs.cache
+C:\Users\Kuba\OneDrive\UDP\UDPServer\UDPServer\obj\Debug\UDPServer.exe
+C:\Users\Kuba\OneDrive\UDP\UDPServer\UDPServer\obj\Debug\UDPServer.pdb
+C:\Users\Kuba\OneDrive\UDP\UDPServer\UDPServer\bin\Debug\AForge.Video.DirectShow.dll
+C:\Users\Kuba\OneDrive\UDP\UDPServer\UDPServer\bin\Debug\AForge.Video.dll
+C:\Users\Kuba\OneDrive\UDP\UDPServer\UDPServer\bin\Debug\AForge.dll
+C:\Users\Kuba\OneDrive\UDP\UDPServer\UDPServer\bin\Debug\AForge.Video.xml
+C:\Users\Kuba\OneDrive\UDP\UDPServer\UDPServer\bin\Debug\AForge.Video.DirectShow.xml
+C:\Users\Kuba\OneDrive\UDP\UDPServer\UDPServer\bin\Debug\AForge.xml
+C:\Users\Kuba\OneDrive\UDP\UDPServer\UDPServer\obj\Debug\UDPServer.csproj.CopyComplete

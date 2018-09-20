@@ -24,7 +24,7 @@ namespace UDPClient_Simiple
                 if (receivedBytes != null)
                 {
                     string message = Encoding.ASCII.GetString(receivedBytes);
-                    Console.WriteLine(count++ + "received message " );
+                    Console.WriteLine(count++ + "received message " + receivedBytes.Length );
 
                 }
                 else

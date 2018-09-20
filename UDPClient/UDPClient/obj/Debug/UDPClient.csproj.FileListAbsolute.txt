@@ -1,7 +1,0 @@
-C:\Users\Kuba\Desktop\UDP\UDPClient\UDPClient\obj\Debug\UDPClient.csprojAssemblyReference.cache
-C:\Users\Kuba\Desktop\UDP\UDPClient\UDPClient\obj\Debug\UDPClient.csproj.CoreCompileInputs.cache
-C:\Users\Kuba\Desktop\UDP\UDPClient\UDPClient\bin\Debug\UDPClient.exe.config
-C:\Users\Kuba\Desktop\UDP\UDPClient\UDPClient\bin\Debug\UDPClient.exe
-C:\Users\Kuba\Desktop\UDP\UDPClient\UDPClient\bin\Debug\UDPClient.pdb
-C:\Users\Kuba\Desktop\UDP\UDPClient\UDPClient\obj\Debug\UDPClient.exe
-C:\Users\Kuba\Desktop\UDP\UDPClient\UDPClient\obj\Debug\UDPClient.pdb
