@@ -42,6 +42,10 @@ namespace UDPServer
                         Console.WriteLine("String od klienta: "+StringOdKlienta + " " + StringOdKlienta.Length);
                         WyslijDoArduino(StringOdKlienta);
 
+
+
+                        
+
                         //REAKCJA PROGRAMU NA STRING OTRZYMANY OD KLIENTA
                         if(StringOdKlienta.Contains("cam0"))
                         {
@@ -122,7 +126,7 @@ namespace UDPServer
         {
 
             serial1 = new SerialPort();
-            serial1.PortName = "COM3";
+            serial1.PortName = "COM4";
             serial1.Parity = Parity.None;
             serial1.BaudRate = 115200;
             serial1.DataBits = 8;
@@ -149,8 +153,14 @@ namespace UDPServer
 
             byte[] buf = new byte[serial1.BytesToRead];
             serial1.Read(buf, 0, buf.Length);
+
+            //Odeslij klientowi to co odpowiedzialo Arduino
+            Send(buf);
+
             myString = System.Text.Encoding.ASCII.GetString(buf).Trim();
             Console.WriteLine("Odebrano z arduino: " + myString);
+
+
 
         }
         public static void Instantiate()

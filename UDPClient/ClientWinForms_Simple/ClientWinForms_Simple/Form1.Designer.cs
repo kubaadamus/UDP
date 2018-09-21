@@ -36,6 +36,7 @@
             this.Sbutton = new System.Windows.Forms.Button();
             this.Abutton = new System.Windows.Forms.Button();
             this.Dbutton = new System.Windows.Forms.Button();
+            this.ArduinoReceive = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -113,11 +114,20 @@
             this.Dbutton.Text = "D";
             this.Dbutton.UseVisualStyleBackColor = true;
             // 
+            // ArduinoReceive
+            // 
+            this.ArduinoReceive.Location = new System.Drawing.Point(607, 199);
+            this.ArduinoReceive.Multiline = true;
+            this.ArduinoReceive.Name = "ArduinoReceive";
+            this.ArduinoReceive.Size = new System.Drawing.Size(136, 126);
+            this.ArduinoReceive.TabIndex = 8;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.ArduinoReceive);
             this.Controls.Add(this.Dbutton);
             this.Controls.Add(this.Abutton);
             this.Controls.Add(this.Sbutton);
@@ -144,6 +154,7 @@
         private System.Windows.Forms.Button Sbutton;
         private System.Windows.Forms.Button Abutton;
         private System.Windows.Forms.Button Dbutton;
+        private System.Windows.Forms.TextBox ArduinoReceive;
     }
 }
 

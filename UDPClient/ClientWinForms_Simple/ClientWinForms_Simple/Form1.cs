@@ -80,8 +80,15 @@ namespace ClientWinForms_Simple
         }
         private void ShowMsg(byte[] msg)
         {
-            //Console.WriteLine("mam!" + msg[0]);
-            pictureBox1.Image = byteArrayToImage(msg);
+            if(msg.Length<100)
+            {
+                ArduinoReceive.Text = Encoding.ASCII.GetString(msg);
+            }
+            else
+            {
+                pictureBox1.Image = byteArrayToImage(msg);
+            }
+
         }
         public static Image byteArrayToImage(byte[] byteArrayIn)
         {
