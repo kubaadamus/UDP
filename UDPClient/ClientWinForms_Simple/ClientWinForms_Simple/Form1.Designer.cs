@@ -37,6 +37,7 @@
             this.Abutton = new System.Windows.Forms.Button();
             this.Dbutton = new System.Windows.Forms.Button();
             this.ArduinoReceive = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -44,34 +45,34 @@
             // 
             this.pictureBox1.Location = new System.Drawing.Point(12, 12);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(558, 397);
+            this.pictureBox1.Size = new System.Drawing.Size(592, 460);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(658, 357);
+            this.button1.Location = new System.Drawing.Point(182, 478);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 1;
-            this.button1.Text = "a";
+            this.button1.Text = "Cam 1";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(658, 386);
+            this.button2.Location = new System.Drawing.Point(182, 507);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 2;
-            this.button2.Text = "b";
+            this.button2.Text = "Cam 2";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(668, 109);
+            this.textBox1.Location = new System.Drawing.Point(75, 517);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(25, 20);
             this.textBox1.TabIndex = 3;
@@ -80,7 +81,7 @@
             // 
             // Wbutton
             // 
-            this.Wbutton.Location = new System.Drawing.Point(658, 70);
+            this.Wbutton.Location = new System.Drawing.Point(65, 478);
             this.Wbutton.Name = "Wbutton";
             this.Wbutton.Size = new System.Drawing.Size(45, 33);
             this.Wbutton.TabIndex = 4;
@@ -89,7 +90,7 @@
             // 
             // Sbutton
             // 
-            this.Sbutton.Location = new System.Drawing.Point(658, 135);
+            this.Sbutton.Location = new System.Drawing.Point(65, 543);
             this.Sbutton.Name = "Sbutton";
             this.Sbutton.Size = new System.Drawing.Size(45, 33);
             this.Sbutton.TabIndex = 5;
@@ -98,7 +99,7 @@
             // 
             // Abutton
             // 
-            this.Abutton.Location = new System.Drawing.Point(607, 135);
+            this.Abutton.Location = new System.Drawing.Point(14, 543);
             this.Abutton.Name = "Abutton";
             this.Abutton.Size = new System.Drawing.Size(45, 33);
             this.Abutton.TabIndex = 6;
@@ -107,7 +108,7 @@
             // 
             // Dbutton
             // 
-            this.Dbutton.Location = new System.Drawing.Point(709, 135);
+            this.Dbutton.Location = new System.Drawing.Point(116, 543);
             this.Dbutton.Name = "Dbutton";
             this.Dbutton.Size = new System.Drawing.Size(45, 33);
             this.Dbutton.TabIndex = 7;
@@ -116,17 +117,28 @@
             // 
             // ArduinoReceive
             // 
-            this.ArduinoReceive.Location = new System.Drawing.Point(607, 199);
+            this.ArduinoReceive.Location = new System.Drawing.Point(610, 25);
             this.ArduinoReceive.Multiline = true;
             this.ArduinoReceive.Name = "ArduinoReceive";
-            this.ArduinoReceive.Size = new System.Drawing.Size(136, 126);
+            this.ArduinoReceive.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.ArduinoReceive.Size = new System.Drawing.Size(398, 447);
             this.ArduinoReceive.TabIndex = 8;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(753, 9);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(120, 13);
+            this.label1.TabIndex = 9;
+            this.label1.Text = "Feedback From Arduino";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(1020, 587);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.ArduinoReceive);
             this.Controls.Add(this.Dbutton);
             this.Controls.Add(this.Abutton);
@@ -155,6 +167,7 @@
         private System.Windows.Forms.Button Abutton;
         private System.Windows.Forms.Button Dbutton;
         private System.Windows.Forms.TextBox ArduinoReceive;
+        private System.Windows.Forms.Label label1;
     }
 }
 

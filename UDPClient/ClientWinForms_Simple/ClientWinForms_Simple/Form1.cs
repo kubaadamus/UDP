@@ -82,7 +82,8 @@ namespace ClientWinForms_Simple
         {
             if(msg.Length<100)
             {
-                ArduinoReceive.Text = Encoding.ASCII.GetString(msg);
+                ArduinoReceive.AppendText(DateTime.Now + " | " + Encoding.ASCII.GetString(msg) + " | ");
+                ArduinoReceive.AppendText(Environment.NewLine);
             }
             else
             {

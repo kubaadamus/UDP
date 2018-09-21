@@ -102,11 +102,11 @@ namespace UDPServer
 
                 if (Send(ImageArray))
                 {
-                    Thread.Sleep(100);
+                    Thread.Sleep(50);
                 }
                 else
                 {
-                    Thread.Sleep(100);
+                    Thread.Sleep(50);
                 }
             }
         }
@@ -117,10 +117,48 @@ namespace UDPServer
         {
             Bitmap bitmap = (Bitmap)eventArgs.Frame.Clone();
             Bitmap resized = new Bitmap(bitmap, new Size(bitmap.Width / 3, bitmap.Height / 3));
-            Image i = (Image)resized;
-            ImageArray = ImageToByteArray(i);
-            Send(ImageArray);
+            //=========================KONWERTER==============//
+            ImageArray = ImageToByteArray(bitmap, 20L);   // OBRAZ JEST TU KOMPRESOWANY!
             { }
+            //================================================//
+
+            if (Send(ImageArray))
+            {
+                Console.WriteLine("Wyslano obrazk");
+            }
+            else
+            {
+                Console.WriteLine("Cos nie tak z obrazkiem!");
+            }
+
+            { }
+        }
+        //public static Image GetCompressedBitmap(Bitmap bmp, long quality)
+        //{
+        //    using (var mss = new MemoryStream())
+        //    {
+        //       EncoderParameter qualityParam = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality);
+        //        ImageCodecInfo imageCodec = ImageCodecInfo.GetImageEncoders().FirstOrDefault(o => o.FormatID == ImageFormat.Jpeg.Guid);
+        //        EncoderParameters parameters = new EncoderParameters(1);
+        //        parameters.Param[0] = qualityParam;
+        //        bmp.Save(mss, imageCodec, parameters);
+        //        return Image.FromStream(mss);
+        //    }
+        //}
+        public static byte[] ImageToByteArray(System.Drawing.Bitmap imageIn, long quality)
+        {
+            using (var ms = new MemoryStream())
+            {
+                EncoderParameter qualityParam = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality);
+                ImageCodecInfo imageCodec = ImageCodecInfo.GetImageEncoders().FirstOrDefault(o => o.FormatID == ImageFormat.Jpeg.Guid);
+                EncoderParameters parameters = new EncoderParameters(1);
+                parameters.Param[0] = qualityParam;
+
+
+                imageIn.Save(ms, imageCodec,parameters);
+                return ms.ToArray();
+
+            }
         }
         public static void InicjalizujSerial()
         {
@@ -215,14 +253,8 @@ namespace UDPServer
         //
         //    return image;
         //}
-        public static byte[] ImageToByteArray(System.Drawing.Image imageIn)
-        {
-            using (var ms = new MemoryStream())
-            {
-                imageIn.Save(ms, ImageFormat.Bmp);
-                return ms.ToArray();
-            }
-        }
+
+
         public static bool Send(byte[] arrayToSend)
         {
             try
