@@ -13,6 +13,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.IO.Ports;
+using System.Management;
 
 namespace UDPServer
 {
@@ -31,8 +32,8 @@ namespace UDPServer
             //=================//
         public static void Main(string[] args)
         {
+            AutodetectArduinoPort();
 
-            GetArduinoPort();
             Instantiate();
             Thread.Sleep(1000);
             while (true)
@@ -99,12 +100,12 @@ namespace UDPServer
                             }
 
                         }
-                        if (StringOdKlienta.Contains("cam3"))
+                        if (StringOdKlienta.Contains("cam2"))
                         {
                             try
                             {
                                 videoSource.Stop();
-                                videoSource = new VideoCaptureDevice(videoDevicesList[3].MonikerString);
+                                videoSource = new VideoCaptureDevice(videoDevicesList[2].MonikerString);
                                 videoSource.NewFrame += new NewFrameEventHandler(video_NewFrame);
                                 videoSource.Start();
                                 Console.WriteLine("kamerka wybrana: " + videoDevicesList[2].Name);
@@ -282,20 +283,38 @@ namespace UDPServer
         }
 
         //========================= ZDOBĄDŹ LISTĘ URZĄDZEŃ USB ========================//
-        public static void GetArduinoPort()
+
+        public static string AutodetectArduinoPort()
         {
+            ManagementScope connectionScope = new ManagementScope();
+            SelectQuery serialQuery = new SelectQuery("SELECT * FROM Win32_SerialPort");
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher(connectionScope, serialQuery);
 
-            // Get a list of serial port names.
-            string[] ports = SerialPort.GetPortNames();
-
-            Console.WriteLine("The following serial ports were found:");
-
-            // Display each port name to the console.
-            foreach (string port in ports)
+            try
             {
-                Console.WriteLine(port);
-                ArduinoPort = port;
+                foreach (ManagementObject item in searcher.Get())
+                {
+                    string desc = item["Description"].ToString();
+                    string deviceId = item["DeviceID"].ToString();
+
+                    Console.WriteLine("Wykryto: " + desc + " / " + deviceId);
+
+                    if (desc.Contains("Arduino"))
+                    {
+                        Console.WriteLine(desc);
+                        Console.WriteLine(deviceId);
+                        ArduinoPort = deviceId;
+                        Console.WriteLine("ustawiam port arduino na: " + ArduinoPort);
+                        return deviceId;
+                    }
+                }
             }
+            catch (ManagementException e)
+            {
+                /* Do Nothing */
+            }
+
+            return null;
         }
     }
 }

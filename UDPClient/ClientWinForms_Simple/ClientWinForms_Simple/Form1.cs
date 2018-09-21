@@ -114,7 +114,11 @@ namespace ClientWinForms_Simple
             byte[] data = Encoding.ASCII.GetBytes("cam1");
             client.Send(data, data.Length, endpoint);
         }
-
+        private void button3_Click(object sender, EventArgs e)
+        {
+            byte[] data = Encoding.ASCII.GetBytes("cam2");
+            client.Send(data, data.Length, endpoint);
+        }
         private void textBox1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.W && W) { W = false; Wbutton.Enabled = false; byte[] data = Encoding.ASCII.GetBytes("ARD1"); client.Send(data, data.Length, endpoint); }
@@ -140,5 +144,12 @@ namespace ClientWinForms_Simple
             client.Send(data, data.Length, endpoint);
 
         }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+
     }
 }

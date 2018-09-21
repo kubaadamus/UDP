@@ -30,9 +30,11 @@ Serial.println(rfs);     // NA TYM POZIOMIE MAMY INTEGERA !
 
 if(rfs==1){
   digitalWrite(13,HIGH);
+  digitalWrite(2,HIGH);
 }
 else{
   digitalWrite(13,LOW);
+  digitalWrite(2,LOW);
 }
 
 }
