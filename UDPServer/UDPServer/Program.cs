@@ -23,6 +23,7 @@ namespace UDPServer
         public static byte[] ImageArray; // Tablica która zostanie zapełniona danymi z kamerki i wyslana w sieć
         public static long VideoQuality = 50L;
         public static string StringOdKlienta = "";
+        public static string ArduinoPort = "COM3";
             //zmienne portu com//
             public static SerialPort serial1;
             public static string inString = "";
@@ -30,6 +31,8 @@ namespace UDPServer
             //=================//
         public static void Main(string[] args)
         {
+
+            GetArduinoPort();
             Instantiate();
             Thread.Sleep(1000);
             while (true)
@@ -174,7 +177,7 @@ namespace UDPServer
         {
 
             serial1 = new SerialPort();
-            serial1.PortName = "COM4";
+            serial1.PortName = ArduinoPort;
             serial1.Parity = Parity.None;
             serial1.BaudRate = 115200;
             serial1.DataBits = 8;
@@ -275,6 +278,23 @@ namespace UDPServer
             {
 
                 return false;
+            }
+        }
+
+        //========================= ZDOBĄDŹ LISTĘ URZĄDZEŃ USB ========================//
+        public static void GetArduinoPort()
+        {
+
+            // Get a list of serial port names.
+            string[] ports = SerialPort.GetPortNames();
+
+            Console.WriteLine("The following serial ports were found:");
+
+            // Display each port name to the console.
+            foreach (string port in ports)
+            {
+                Console.WriteLine(port);
+                ArduinoPort = port;
             }
         }
     }
