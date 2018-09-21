@@ -2,7 +2,7 @@
 #define L_bck 3
 #define R_for 4
 #define R_bck 5
-String instring; 
+int rfs=0; // Received From Server
 void setup() 
 { 
   pinMode(L_for,OUTPUT);
@@ -10,46 +10,39 @@ void setup()
   pinMode(R_for,OUTPUT);
   pinMode(R_bck,OUTPUT);
 Serial.begin(115200); 
-Serial.setTimeout(100); 
+Serial.setTimeout(10); 
 } 
 void loop() 
 { 
- 
-instring = Serial.readString();
 
+if (Serial.available() > 0) { // WCZYTUJ DANE
+  
+int odczyt = Serial.parseInt();
 
-//REAKCJA ARDUINO NA BODŹCE
-if(instring=="w")
-{
-digitalWrite(L_for,HIGH);
-digitalWrite(R_for,HIGH);
-}
-if(instring=="s"){
-digitalWrite(L_bck,HIGH);
-digitalWrite(R_bck,HIGH);
-}
-if(instring=="s_stop"){
-digitalWrite(L_bck,LOW);
-digitalWrite(R_bck,LOW);
-}
+serialFlush();
 
-if(instring=="w_stop"){
-digitalWrite(L_for,LOW);
-digitalWrite(R_for,LOW);
+if(odczyt!=0){
+  rfs = odczyt;
+}
+Serial.println(rfs);     // NA TYM POZIOMIE MAMY INTEGERA !
+
+//TU WYKONUJ REAKCJE ARDUINO!
+
+if(rfs==1){
+  digitalWrite(13,HIGH);
+}
+else{
+  digitalWrite(13,LOW);
 }
 
-
-
-
-if(instring.length()>0)
-{
-  wyslij(instring.substring(0, instring.length()-2));
-  instring="";
 }
 
 
+
 }
-void wyslij(String co) 
-{ 
-Serial.print(co); 
-} 
+
+void serialFlush(){ // Funkcja zdejmuje resztę wiszących na serial porcie bitów bo dane i tak zostały sparsowane.
+  while(Serial.available() > 0) {
+    char t = Serial.read();
+  }
+}  

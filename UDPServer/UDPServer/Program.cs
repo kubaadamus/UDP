@@ -22,6 +22,7 @@ namespace UDPServer
         public static Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         public static byte[] ImageArray; // Tablica która zostanie zapełniona danymi z kamerki i wyslana w sieć
         public static long VideoQuality = 50L;
+        public static string StringOdKlienta = "";
             //zmienne portu com//
             public static SerialPort serial1;
             public static string inString = "";
@@ -39,7 +40,7 @@ namespace UDPServer
                     {
                         byte[] risiw = new byte[10];
                         sock.Receive(risiw);
-                        string StringOdKlienta = Encoding.ASCII.GetString(risiw);
+                        StringOdKlienta = Encoding.ASCII.GetString(risiw);
                         Console.WriteLine("String od klienta: "+StringOdKlienta + " " + StringOdKlienta.Length);
 
 
@@ -47,7 +48,7 @@ namespace UDPServer
 
                         if (StringOdKlienta.Contains("ARD"))
                         {
-                            WyslijDoArduino(StringOdKlienta.Replace("ARD",""));
+                                WyslijDoArduino(StringOdKlienta.Replace("ARD", ""));
                         }
 
 
@@ -58,7 +59,7 @@ namespace UDPServer
                             Console.WriteLine(przyciete);
                             int x = Int32.Parse(przyciete);
                             Console.WriteLine(x);
-                            VideoQuality = x*10;
+                            VideoQuality = x;
                         }
 
                         
@@ -181,8 +182,8 @@ namespace UDPServer
             if (!serial1.IsOpen && serial1 != null)
             {
                 serial1.Open();
-                serial1.ReadTimeout = 2000;
-                serial1.WriteTimeout = 1000;
+                serial1.ReadTimeout = 30;
+                serial1.WriteTimeout = 30;
             }
             serial1.BaseStream.Flush();
             serial1.DiscardInBuffer();
@@ -198,7 +199,7 @@ namespace UDPServer
                                           SerialDataReceivedEventArgs e)
         {
 
-            byte[] buf = new byte[serial1.BytesToRead];
+                byte[] buf = new byte[serial1.BytesToRead];
             serial1.Read(buf, 0, buf.Length);
 
             //Odeslij klientowi to co odpowiedzialo Arduino
@@ -206,7 +207,6 @@ namespace UDPServer
 
             myString = System.Text.Encoding.ASCII.GetString(buf).Trim();
             Console.WriteLine("Odebrano z arduino: " + myString);
-
 
 
         }

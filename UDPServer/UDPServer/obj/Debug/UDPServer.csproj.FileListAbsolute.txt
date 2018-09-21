@@ -46,3 +46,4 @@ D:\Udostepniony\UDP\UDPServer\UDPServer\obj\Debug\UDPServer.csproj.CoreCompileIn
 D:\Udostepniony\UDP\UDPServer\UDPServer\obj\Debug\UDPServer.csproj.CopyComplete
 D:\Udostepniony\UDP\UDPServer\UDPServer\obj\Debug\UDPServer.exe
 D:\Udostepniony\UDP\UDPServer\UDPServer\obj\Debug\UDPServer.pdb
+D:\Udostepniony\UDP\UDPServer\UDPServer\obj\Debug\UDPServer.csprojAssemblyReference.cache

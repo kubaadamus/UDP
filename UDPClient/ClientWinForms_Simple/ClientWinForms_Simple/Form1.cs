@@ -82,8 +82,12 @@ namespace ClientWinForms_Simple
         {
             if(msg.Length<100)
             {
-                DebugConsole.AppendText(DateTime.Now + " | " + Encoding.ASCII.GetString(msg) + " | ");
-                DebugConsole.AppendText(Environment.NewLine);
+
+                if(Encoding.ASCII.GetString(msg)!="0")
+                {
+                    DebugConsole.AppendText(DateTime.Now + Encoding.ASCII.GetString(msg));
+                }
+ 
             }
             else
             {
@@ -113,19 +117,19 @@ namespace ClientWinForms_Simple
 
         private void textBox1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.W && W) { W = false; Wbutton.Enabled = false; byte[] data = Encoding.ASCII.GetBytes("ARDw"); client.Send(data, data.Length, endpoint); }
-            if (e.KeyCode == Keys.S && S) { S = false; Sbutton.Enabled = false; byte[] data = Encoding.ASCII.GetBytes("ARDs"); client.Send(data, data.Length, endpoint); }
-            if (e.KeyCode == Keys.A && A) { A = false; Abutton.Enabled = false; byte[] data = Encoding.ASCII.GetBytes("ARDa"); client.Send(data, data.Length, endpoint); }
-            if (e.KeyCode == Keys.D && D) { D = false; Dbutton.Enabled = false; byte[] data = Encoding.ASCII.GetBytes("ARDd"); client.Send(data, data.Length, endpoint); }
+            if (e.KeyCode == Keys.W && W) { W = false; Wbutton.Enabled = false; byte[] data = Encoding.ASCII.GetBytes("ARD1"); client.Send(data, data.Length, endpoint); }
+            if (e.KeyCode == Keys.S && S) { S = false; Sbutton.Enabled = false; byte[] data = Encoding.ASCII.GetBytes("ARD2"); client.Send(data, data.Length, endpoint); }
+            if (e.KeyCode == Keys.A && A) { A = false; Abutton.Enabled = false; byte[] data = Encoding.ASCII.GetBytes("ARD3"); client.Send(data, data.Length, endpoint); }
+            if (e.KeyCode == Keys.D && D) { D = false; Dbutton.Enabled = false; byte[] data = Encoding.ASCII.GetBytes("ARD4"); client.Send(data, data.Length, endpoint); }
             textBox1.Clear();
         }
 
         private void textBox1_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.W) { W = true; Wbutton.Enabled = true; byte[] data = Encoding.ASCII.GetBytes("ARDw_stop"); client.Send(data, data.Length, endpoint); }
-            if (e.KeyCode == Keys.S) { S = true; Sbutton.Enabled = true; byte[] data = Encoding.ASCII.GetBytes("ARDs_stop"); client.Send(data, data.Length, endpoint); }
-            if (e.KeyCode == Keys.A) { A = true; Abutton.Enabled = true; byte[] data = Encoding.ASCII.GetBytes("ARDa_stop"); client.Send(data, data.Length, endpoint); }
-            if (e.KeyCode == Keys.D) { D = true; Dbutton.Enabled = true; byte[] data = Encoding.ASCII.GetBytes("ARDd_stop"); client.Send(data, data.Length, endpoint); }
+            if (e.KeyCode == Keys.W) { W = true; Wbutton.Enabled = true; byte[] data = Encoding.ASCII.GetBytes("ARD5"); client.Send(data, data.Length, endpoint); }
+            if (e.KeyCode == Keys.S) { S = true; Sbutton.Enabled = true; byte[] data = Encoding.ASCII.GetBytes("ARD6"); client.Send(data, data.Length, endpoint); }
+            if (e.KeyCode == Keys.A) { A = true; Abutton.Enabled = true; byte[] data = Encoding.ASCII.GetBytes("ARD7"); client.Send(data, data.Length, endpoint); }
+            if (e.KeyCode == Keys.D) { D = true; Dbutton.Enabled = true; byte[] data = Encoding.ASCII.GetBytes("ARD8"); client.Send(data, data.Length, endpoint); }
         }
 
         private void hScrollBar1_ValueChanged(object sender, EventArgs e)
