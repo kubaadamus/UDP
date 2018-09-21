@@ -36,8 +36,9 @@
             this.Sbutton = new System.Windows.Forms.Button();
             this.Abutton = new System.Windows.Forms.Button();
             this.Dbutton = new System.Windows.Forms.Button();
-            this.ArduinoReceive = new System.Windows.Forms.TextBox();
+            this.DebugConsole = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.hScrollBar1 = new System.Windows.Forms.HScrollBar();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -115,14 +116,14 @@
             this.Dbutton.Text = "D";
             this.Dbutton.UseVisualStyleBackColor = true;
             // 
-            // ArduinoReceive
+            // DebugConsole
             // 
-            this.ArduinoReceive.Location = new System.Drawing.Point(610, 25);
-            this.ArduinoReceive.Multiline = true;
-            this.ArduinoReceive.Name = "ArduinoReceive";
-            this.ArduinoReceive.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.ArduinoReceive.Size = new System.Drawing.Size(398, 447);
-            this.ArduinoReceive.TabIndex = 8;
+            this.DebugConsole.Location = new System.Drawing.Point(610, 25);
+            this.DebugConsole.Multiline = true;
+            this.DebugConsole.Name = "DebugConsole";
+            this.DebugConsole.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.DebugConsole.Size = new System.Drawing.Size(398, 447);
+            this.DebugConsole.TabIndex = 8;
             // 
             // label1
             // 
@@ -133,13 +134,24 @@
             this.label1.TabIndex = 9;
             this.label1.Text = "Feedback From Arduino";
             // 
+            // hScrollBar1
+            // 
+            this.hScrollBar1.LargeChange = 1;
+            this.hScrollBar1.Location = new System.Drawing.Point(182, 561);
+            this.hScrollBar1.Maximum = 10;
+            this.hScrollBar1.Name = "hScrollBar1";
+            this.hScrollBar1.Size = new System.Drawing.Size(178, 17);
+            this.hScrollBar1.TabIndex = 10;
+            this.hScrollBar1.ValueChanged += new System.EventHandler(this.hScrollBar1_ValueChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1020, 587);
+            this.Controls.Add(this.hScrollBar1);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.ArduinoReceive);
+            this.Controls.Add(this.DebugConsole);
             this.Controls.Add(this.Dbutton);
             this.Controls.Add(this.Abutton);
             this.Controls.Add(this.Sbutton);
@@ -166,8 +178,9 @@
         private System.Windows.Forms.Button Sbutton;
         private System.Windows.Forms.Button Abutton;
         private System.Windows.Forms.Button Dbutton;
-        private System.Windows.Forms.TextBox ArduinoReceive;
+        private System.Windows.Forms.TextBox DebugConsole;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.HScrollBar hScrollBar1;
     }
 }
 

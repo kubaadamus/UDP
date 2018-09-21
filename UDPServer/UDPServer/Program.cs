@@ -21,6 +21,7 @@ namespace UDPServer
         public static IPEndPoint ep = new IPEndPoint(IPAddress.Parse("89.229.95.152"), 16010);
         public static Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         public static byte[] ImageArray; // Tablica która zostanie zapełniona danymi z kamerki i wyslana w sieć
+        public static long VideoQuality = 50L;
             //zmienne portu com//
             public static SerialPort serial1;
             public static string inString = "";
@@ -36,13 +37,29 @@ namespace UDPServer
                 {
                     try
                     {
-                        byte[] risiw = new byte[20];
+                        byte[] risiw = new byte[10];
                         sock.Receive(risiw);
                         string StringOdKlienta = Encoding.ASCII.GetString(risiw);
                         Console.WriteLine("String od klienta: "+StringOdKlienta + " " + StringOdKlienta.Length);
-                        WyslijDoArduino(StringOdKlienta);
 
 
+
+
+                        if (StringOdKlienta.Contains("ARD"))
+                        {
+                            WyslijDoArduino(StringOdKlienta.Replace("ARD",""));
+                        }
+
+
+                        if(StringOdKlienta.ToLower().Contains('q'))
+                        {
+                            Console.WriteLine("PRZYCINAM!");
+                            string przyciete = (StringOdKlienta.Substring(1, 2));
+                            Console.WriteLine(przyciete);
+                            int x = Int32.Parse(przyciete);
+                            Console.WriteLine(x);
+                            VideoQuality = x*10;
+                        }
 
                         
 
@@ -100,14 +117,6 @@ namespace UDPServer
                     }
                 }
 
-                if (Send(ImageArray))
-                {
-                    Thread.Sleep(50);
-                }
-                else
-                {
-                    Thread.Sleep(50);
-                }
             }
         }
         //ZMIENNE KAMERKI
@@ -118,13 +127,13 @@ namespace UDPServer
             Bitmap bitmap = (Bitmap)eventArgs.Frame.Clone();
             Bitmap resized = new Bitmap(bitmap, new Size(bitmap.Width / 3, bitmap.Height / 3));
             //=========================KONWERTER==============//
-            ImageArray = ImageToByteArray(bitmap, 20L);   // OBRAZ JEST TU KOMPRESOWANY!
+            ImageArray = ImageToByteArray(bitmap, VideoQuality);   // OBRAZ JEST TU KOMPRESOWANY!
             { }
             //================================================//
 
             if (Send(ImageArray))
             {
-                Console.WriteLine("Wyslano obrazk");
+                Console.WriteLine("Wyslano obrazk:"+ImageArray.Length+"bytes");
             }
             else
             {
