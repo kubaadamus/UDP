@@ -35,6 +35,15 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DarrenLee.LiveStream">
+      <HintPath>C:\Users\Kuba\Desktop\AUDIO UDP TEST\NAudio library\DarrenLee.LiveStream.dll</HintPath>
+    </Reference>
+    <Reference Include="NAudio">
+      <HintPath>C:\Users\Kuba\Desktop\AUDIO UDP TEST\NAudio library\NAudio.dll</HintPath>
+    </Reference>
+    <Reference Include="NSpeex">
+      <HintPath>C:\Users\Kuba\Desktop\AUDIO UDP TEST\NAudio library\NSpeex.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />

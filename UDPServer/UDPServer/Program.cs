@@ -32,10 +32,32 @@ namespace UDPServer
             //=================//
         public static void Main(string[] args)
         {
+
+
+            DarrenLee.LiveStream.Audio.Sender AudioSender = new DarrenLee.LiveStream.Audio.Sender();
+            AudioSender.Send("89.229.95.152", 16012);
+
+
+
             AutodetectArduinoPort();
 
-            Instantiate();
-            Thread.Sleep(1000);
+            try
+            {
+                InicjalizujSerial();
+                //Przypisanie eventu do serial portu//
+                serial1.DataReceived += new SerialDataReceivedEventHandler(port_OnReceiveDatazz);
+                //=================================//
+            }
+            catch (Exception){ Console.WriteLine("NIE MA ARDUINO :C "); }
+
+            try
+            {
+                Instantiate_Camera();
+            }
+            catch (Exception)
+            { Console.WriteLine("Nie wyłapałem żadnej kamerki ;_;"); }
+
+            Thread.Sleep(2000);
             while (true)
             {
                 if(sock!=null)
@@ -214,12 +236,9 @@ namespace UDPServer
 
 
         }
-        public static void Instantiate()
+        public static void Instantiate_Camera()
         {
-            InicjalizujSerial();
-            //Przypisanie eventu do serial portu//
-            serial1.DataReceived += new SerialDataReceivedEventHandler(port_OnReceiveDatazz);
-            //=================================//
+
 
             videoDevicesList = new FilterInfoCollection(FilterCategory.VideoInputDevice);
             foreach (FilterInfo videoDevice in videoDevicesList)

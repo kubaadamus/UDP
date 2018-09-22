@@ -28,6 +28,12 @@ namespace ClientWinForms_Simple
         bool D = true;
         public Form1()
         {
+
+            DarrenLee.LiveStream.Audio.Receiver AudioReceiver = new DarrenLee.LiveStream.Audio.Receiver();
+
+            AudioReceiver.Receive(IPAddress.Any.ToString(), 16012);
+
+
             InitializeComponent();
             if (isServerStarted){Stop();}else{Start();}
         }
