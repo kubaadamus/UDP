@@ -17,6 +17,9 @@ namespace ClientWinForms_Simple
 {
     public partial class Form1 : Form
     {
+        public static int port_Video = 16010;
+        public static int port_Audio = 16012;
+
         delegate void ShowMessageMethod(byte[] msg);
         UdpClient client = null;
         IPEndPoint endpoint = null;
@@ -31,7 +34,7 @@ namespace ClientWinForms_Simple
 
             DarrenLee.LiveStream.Audio.Receiver AudioReceiver = new DarrenLee.LiveStream.Audio.Receiver();
 
-            AudioReceiver.Receive(IPAddress.Any.ToString(), 16012);
+            AudioReceiver.Receive(IPAddress.Any.ToString(), port_Audio);
 
 
             InitializeComponent();
@@ -47,11 +50,11 @@ namespace ClientWinForms_Simple
         private void Start()
         {
             //Create the server.
-            IPEndPoint serverEnd = new IPEndPoint(IPAddress.Any, 16010);
+            IPEndPoint serverEnd = new IPEndPoint(IPAddress.Any, port_Video);
             client = new UdpClient(serverEnd);
             //ShowMsg("Waiting for a client...");
             //Create the client end.
-            endpoint = new IPEndPoint(IPAddress.Any, 16010);
+            endpoint = new IPEndPoint(IPAddress.Any, port_Video);
 
             //Start listening.
             Thread listenThread = new Thread(new ThreadStart(Listening));
