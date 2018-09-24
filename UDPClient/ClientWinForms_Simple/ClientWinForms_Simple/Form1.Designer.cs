@@ -31,7 +31,6 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.Wbutton = new System.Windows.Forms.Button();
             this.Sbutton = new System.Windows.Forms.Button();
             this.Abutton = new System.Windows.Forms.Button();
@@ -40,6 +39,13 @@
             this.label1 = new System.Windows.Forms.Label();
             this.hScrollBar1 = new System.Windows.Forms.HScrollBar();
             this.button3 = new System.Windows.Forms.Button();
+            this.PasswordTextBox = new System.Windows.Forms.TextBox();
+            this.PasswordButton = new System.Windows.Forms.Button();
+            this.ArduinoTestButton = new System.Windows.Forms.Button();
+            this.But8 = new System.Windows.Forms.Button();
+            this.But5 = new System.Windows.Forms.Button();
+            this.But4 = new System.Windows.Forms.Button();
+            this.But6 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -54,7 +60,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(182, 478);
+            this.button1.Location = new System.Drawing.Point(610, 476);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 1;
@@ -64,7 +70,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(182, 506);
+            this.button2.Location = new System.Drawing.Point(610, 504);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 2;
@@ -72,18 +78,9 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(75, 517);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(25, 20);
-            this.textBox1.TabIndex = 3;
-            this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyDown);
-            this.textBox1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyUp);
-            // 
             // Wbutton
             // 
-            this.Wbutton.Location = new System.Drawing.Point(65, 478);
+            this.Wbutton.Location = new System.Drawing.Point(65, 501);
             this.Wbutton.Name = "Wbutton";
             this.Wbutton.Size = new System.Drawing.Size(45, 33);
             this.Wbutton.TabIndex = 4;
@@ -138,7 +135,7 @@
             // hScrollBar1
             // 
             this.hScrollBar1.LargeChange = 1;
-            this.hScrollBar1.Location = new System.Drawing.Point(182, 561);
+            this.hScrollBar1.Location = new System.Drawing.Point(610, 559);
             this.hScrollBar1.Name = "hScrollBar1";
             this.hScrollBar1.Size = new System.Drawing.Size(178, 17);
             this.hScrollBar1.TabIndex = 10;
@@ -146,7 +143,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(182, 535);
+            this.button3.Location = new System.Drawing.Point(610, 533);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(75, 23);
             this.button3.TabIndex = 11;
@@ -154,11 +151,81 @@
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
+            // PasswordTextBox
+            // 
+            this.PasswordTextBox.Location = new System.Drawing.Point(908, 491);
+            this.PasswordTextBox.Name = "PasswordTextBox";
+            this.PasswordTextBox.Size = new System.Drawing.Size(100, 20);
+            this.PasswordTextBox.TabIndex = 12;
+            // 
+            // PasswordButton
+            // 
+            this.PasswordButton.Location = new System.Drawing.Point(919, 517);
+            this.PasswordButton.Name = "PasswordButton";
+            this.PasswordButton.Size = new System.Drawing.Size(75, 23);
+            this.PasswordButton.TabIndex = 13;
+            this.PasswordButton.Text = "Autoryzuj";
+            this.PasswordButton.UseVisualStyleBackColor = true;
+            this.PasswordButton.Click += new System.EventHandler(this.PasswordButton_Click);
+            // 
+            // ArduinoTestButton
+            // 
+            this.ArduinoTestButton.Location = new System.Drawing.Point(691, 476);
+            this.ArduinoTestButton.Name = "ArduinoTestButton";
+            this.ArduinoTestButton.Size = new System.Drawing.Size(75, 23);
+            this.ArduinoTestButton.TabIndex = 14;
+            this.ArduinoTestButton.Text = "TestujArduino";
+            this.ArduinoTestButton.UseVisualStyleBackColor = true;
+            this.ArduinoTestButton.Click += new System.EventHandler(this.ArduinoTestButton_Click);
+            // 
+            // But8
+            // 
+            this.But8.Location = new System.Drawing.Point(468, 499);
+            this.But8.Name = "But8";
+            this.But8.Size = new System.Drawing.Size(43, 36);
+            this.But8.TabIndex = 15;
+            this.But8.Text = "8";
+            this.But8.UseVisualStyleBackColor = true;
+            // 
+            // But5
+            // 
+            this.But5.Location = new System.Drawing.Point(468, 541);
+            this.But5.Name = "But5";
+            this.But5.Size = new System.Drawing.Size(43, 36);
+            this.But5.TabIndex = 16;
+            this.But5.Text = "5";
+            this.But5.UseVisualStyleBackColor = true;
+            // 
+            // But4
+            // 
+            this.But4.Location = new System.Drawing.Point(419, 541);
+            this.But4.Name = "But4";
+            this.But4.Size = new System.Drawing.Size(43, 36);
+            this.But4.TabIndex = 17;
+            this.But4.Text = "4";
+            this.But4.UseVisualStyleBackColor = true;
+            // 
+            // But6
+            // 
+            this.But6.Location = new System.Drawing.Point(517, 541);
+            this.But6.Name = "But6";
+            this.But6.Size = new System.Drawing.Size(43, 36);
+            this.But6.TabIndex = 18;
+            this.But6.Text = "6";
+            this.But6.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1020, 587);
+            this.Controls.Add(this.But6);
+            this.Controls.Add(this.But4);
+            this.Controls.Add(this.But5);
+            this.Controls.Add(this.But8);
+            this.Controls.Add(this.ArduinoTestButton);
+            this.Controls.Add(this.PasswordButton);
+            this.Controls.Add(this.PasswordTextBox);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.hScrollBar1);
             this.Controls.Add(this.label1);
@@ -167,7 +234,6 @@
             this.Controls.Add(this.Abutton);
             this.Controls.Add(this.Sbutton);
             this.Controls.Add(this.Wbutton);
-            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.pictureBox1);
@@ -185,7 +251,6 @@
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button Wbutton;
         private System.Windows.Forms.Button Sbutton;
         private System.Windows.Forms.Button Abutton;
@@ -194,6 +259,13 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.HScrollBar hScrollBar1;
         private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.TextBox PasswordTextBox;
+        private System.Windows.Forms.Button PasswordButton;
+        private System.Windows.Forms.Button ArduinoTestButton;
+        private System.Windows.Forms.Button But8;
+        private System.Windows.Forms.Button But5;
+        private System.Windows.Forms.Button But4;
+        private System.Windows.Forms.Button But6;
     }
 }
 

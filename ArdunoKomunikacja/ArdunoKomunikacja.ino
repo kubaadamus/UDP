@@ -37,6 +37,14 @@ else{
   digitalWrite(2,LOW);
 }
 
+if(rfs==2) // Testuj Arduino
+{
+    digitalWrite(2,HIGH);
+    delay(100);
+      digitalWrite(2,LOW);
+      delay(100);
+}
+
 }
 
 

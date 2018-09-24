@@ -38,12 +38,13 @@ namespace UDPServer
         public static long VideoQuality = 50L;
         public static string StringOdKlienta = "";
         public static string ArduinoPort = "COM3";
+        public static bool MonitorAudioInput = false;
         //zmienne portu com//
         public static SerialPort serial1;
         public static string inString = "";
         public static string myString = "";
         //=================//
-        public async static void StartRecordin()
+        public static void StartRecordin()
         {
             audioout.DesiredLatency = 100;
             waveInStream = new WaveInEvent();
@@ -55,45 +56,50 @@ namespace UDPServer
         }
         public static void waveInStream_DataAvailable(object sender, WaveInEventArgs e)
         {
-            Task.Factory.StartNew(() =>
+            if (!MonitorAudioInput)
             {
-                AudioArray = e.Buffer;
-                Console.WriteLine("Mam mikrofon" + AudioArray.Length);
-                using (WaveOut audioout = new WaveOut())
-                using (MemoryStream ms = new MemoryStream(AudioArray))
+                audioout.Volume = 0.0f;
+            }
+            else
+            {
+                audioout.Volume = 1.0f;
+            }
+                Task.Factory.StartNew(() =>
                 {
-                    ManualResetEvent semaphoreObject = new ManualResetEvent(false);
-                    audioout.DesiredLatency = 100;
-                    RawSourceWaveStream rsws = new RawSourceWaveStream(ms, wf);
-                    IWaveProvider provider = rsws;
-                    audioout.Init(provider);
-                    EventHandler<NAudio.Wave.StoppedEventArgs> handler = (o, k) =>
+                    AudioArray = e.Buffer;
+                    Console.WriteLine("Mam mikrofon" + AudioArray.Length);
+                    using (WaveOut audioout = new WaveOut())
+                    using (MemoryStream ms = new MemoryStream(AudioArray))
                     {
-                        semaphoreObject.Set();
-                    };
-                    audioout.PlaybackStopped += handler;
-                    audioout.Play();
-                    //while (audioout.PlaybackState != PlaybackState.Stopped) ;
-                    semaphoreObject.WaitOne();
-                    audioout.PlaybackStopped -= handler;
-                }
-            });
+                        ManualResetEvent semaphoreObject = new ManualResetEvent(false);
+                        audioout.DesiredLatency = 100;
+                        RawSourceWaveStream rsws = new RawSourceWaveStream(ms, wf);
+                        IWaveProvider provider = rsws;
+                        audioout.Init(provider);
+                        EventHandler<NAudio.Wave.StoppedEventArgs> handler = (o, k) =>
+                        {
+                            semaphoreObject.Set();
+                        };
+                        audioout.PlaybackStopped += handler;
+                        audioout.Play();
+                        //while (audioout.PlaybackState != PlaybackState.Stopped) ;
+                        semaphoreObject.WaitOne();
+                        audioout.PlaybackStopped -= handler;
+                        Send(AudioArray);
+                    }
+                });
+
+            
         }
+
+
 
         public static void Main(string[] args)
         {
 
-            //Thread t = new Thread(new ThreadStart(StartRecordin));
-            //t.Start();
+            Console.WriteLine("Podaj hasło");
             StartRecordin();
-
-            //DarrenLee.LiveStream.Audio.Sender AudioSender = new DarrenLee.LiveStream.Audio.Sender();
-            //AudioSender.Send("89.229.95.152", port_Audio);
-
-
-
             AutodetectArduinoPort();
-
             try
             {
                 InicjalizujSerial();
@@ -102,13 +108,13 @@ namespace UDPServer
                 //=================================//
             }
             catch (Exception) { Console.WriteLine("NIE MA ARDUINO :C "); }
-
             try
             {
                 Instantiate_Camera();
             }
             catch (Exception)
             { Console.WriteLine("Nie wyłapałem żadnej kamerki ;_;"); }
+
 
             Thread.Sleep(2000);
             while (true)
@@ -123,13 +129,12 @@ namespace UDPServer
                         Console.WriteLine("String od klienta: " + StringOdKlienta + " " + StringOdKlienta.Length);
 
 
-
-
+                        //================================================== SERWER PRZEKAZUJE DANE OD KLIENTA DO ARDUINO ===================================//
                         if (StringOdKlienta.Contains("ARD"))
                         {
                             WyslijDoArduino(StringOdKlienta.Replace("ARD", ""));
                         }
-
+                        //===================================================================================================================================//
 
                         if (StringOdKlienta.ToLower().Contains('q'))
                         {
