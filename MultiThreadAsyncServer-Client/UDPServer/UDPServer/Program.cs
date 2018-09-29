@@ -15,7 +15,7 @@ namespace UDPServer
         public static IPEndPoint ep = new IPEndPoint(IPAddress.Parse("89.229.95.152"), 16010);
         public static Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         public static Random rand = new Random();
-        public static byte[] DataForClient;
+        public static bool IsClientConnected = false;
 
         static void Main(string[] args)
         {
@@ -28,16 +28,9 @@ namespace UDPServer
         {
             while (true)
             {
-                if (Send())
-                {
-                    //Console.WriteLine($"{count} Packets have been sent");
-                    Thread.Sleep(10);
-                }
-                else
-                {
-                    Console.WriteLine($"Error whule sending packet!", ConsoleColor.Red);
-                    Thread.Sleep(10);
-                }
+                string test = DateTime.Now.ToString();
+                Send(Encoding.ASCII.GetBytes(test));
+                Thread.Sleep(40);
             }
         }
         public static void Listen()
@@ -48,7 +41,7 @@ namespace UDPServer
                 {
                     byte[] ReceivedBytes = new byte[sock.Available];
                     sock.Receive(ReceivedBytes);
-                    //Console.WriteLine(Encoding.ASCII.GetString(ReceivedBytes));
+                    Console.WriteLine(Encoding.ASCII.GetString(ReceivedBytes));
                     if (ReceivedBytes.Length > 30)
                     {
                         Thread ReceivedVideo = new Thread(() => ReceivedVideoHandler(ReceivedBytes));
@@ -67,27 +60,8 @@ namespace UDPServer
                 }
             }
         }
-        public static bool Send()
+        public static bool Send(byte[] DataForClient)
         {
-            int randomInt = rand.Next(0, 3);
-
-            if (randomInt == 0)
-            {
-                DataForClient = Encoding.ASCII.GetBytes("0123456789012345678901234567890123456789");
-            }
-            else if (randomInt == 1)
-            {
-                DataForClient = Encoding.ASCII.GetBytes("01234567890123456789");
-            }
-            else if (randomInt == 2)
-            {
-                DataForClient = Encoding.ASCII.GetBytes("0123456789");
-            }
-            else
-            {
-                DataForClient = Encoding.ASCII.GetBytes("0");
-            }
-
             try
             {
                 sock.SendTo(DataForClient, ep);

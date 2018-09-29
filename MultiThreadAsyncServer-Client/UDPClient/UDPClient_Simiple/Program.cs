@@ -15,7 +15,6 @@ namespace UDPClient_Simiple
         public static UdpClient client = new UdpClient(16010);
         public static IPEndPoint remoteip = new IPEndPoint(IPAddress.Any, 16010);
         public static Random rand = new Random();
-        public static byte[] DataForServer;
 
         static void Main(string[] args)
         {
@@ -29,7 +28,7 @@ namespace UDPClient_Simiple
             while (true)
             {
                 byte[] receivedBytes = client.Receive(ref remoteip);
-
+                Console.WriteLine(Encoding.ASCII.GetString(receivedBytes));
                 if (receivedBytes.Length > 30)
                 {
                     Thread ReceivedVideo = new Thread(() => ReceivedVideoHandler(receivedBytes));
@@ -69,38 +68,13 @@ namespace UDPClient_Simiple
         {
             while (true)
             {
-                if (Send())
-                {
-                    //Console.WriteLine($"{count} Packets have been sent");
-                    Thread.Sleep(10);
-                }
-                else
-                {
-                    Console.WriteLine($"Error whule sending packet!", ConsoleColor.Red);
-                    Thread.Sleep(10);
-                }
+                string test = DateTime.Now.ToString();
+                Send(Encoding.ASCII.GetBytes(test));
+                Thread.Sleep(40);
             }
         }
-        public static bool Send()
+        public static bool Send(byte[] DataForServer)
         {
-            int randomInt = rand.Next(0, 3);
-
-            if (randomInt == 0)
-            {
-                DataForServer = Encoding.ASCII.GetBytes("0123456789012345678901234567890123456789");
-            }
-            else if (randomInt == 1)
-            {
-                DataForServer = Encoding.ASCII.GetBytes("01234567890123456789");
-            }
-            else if (randomInt == 2)
-            {
-                DataForServer = Encoding.ASCII.GetBytes("0123456789");
-            }
-            else
-            {
-                DataForServer = Encoding.ASCII.GetBytes("0");
-            }
 
             try
             {
