@@ -46,8 +46,8 @@
     <Reference Include="DarrenLee.LiveStream">
       <HintPath>C:\Users\Kuba\Desktop\AUDIO UDP TEST\NAudio library\DarrenLee.LiveStream.dll</HintPath>
     </Reference>
-    <Reference Include="NAudio">
-      <HintPath>C:\Users\Kuba\Desktop\AUDIO UDP TEST\NAudio library\NAudio.dll</HintPath>
+    <Reference Include="NAudio, Version=1.8.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NAudio.1.8.1\lib\net35\NAudio.dll</HintPath>
     </Reference>
     <Reference Include="NSpeex">
       <HintPath>C:\Users\Kuba\Desktop\AUDIO UDP TEST\NAudio library\NSpeex.dll</HintPath>
@@ -69,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

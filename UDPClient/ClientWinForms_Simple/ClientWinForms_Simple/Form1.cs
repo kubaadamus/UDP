@@ -31,9 +31,7 @@ namespace ClientWinForms_Simple
         public Form1()
         {
 
-            DarrenLee.LiveStream.Audio.Receiver AudioReceiver = new DarrenLee.LiveStream.Audio.Receiver();
 
-            AudioReceiver.Receive(IPAddress.Any.ToString(), port_Audio);
 
 
             InitializeComponent();

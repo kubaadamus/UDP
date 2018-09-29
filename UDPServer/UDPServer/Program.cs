@@ -11,11 +11,9 @@ using AForge.Video;
 using AForge.Video.DirectShow;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
 using System.IO.Ports;
 using System.Management;
 using NAudio.Wave;
-using System.Media;
 
 namespace UDPServer
 {
@@ -28,10 +26,11 @@ namespace UDPServer
         public static WaveFormat wf = new WaveFormat();
 
 
-        public static int port_Video = 16010;
+        public static int port_Video = 16012;
         public static int port_Audio = 16012;
 
-        public static IPEndPoint ep = new IPEndPoint(IPAddress.Parse("89.229.95.152"), port_Video);
+
+        public static IPEndPoint ep;
         public static Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         public static byte[] ImageArray; // Tablica która zostanie zapełniona danymi z kamerki i wyslana w sieć
         public static byte[] AudioArray; //Tablica do której recorder audio będzie wpychał bajty z mikrofonu;
@@ -49,11 +48,13 @@ namespace UDPServer
             audioout.DesiredLatency = 100;
             waveInStream = new WaveInEvent();
             waveInStream.DeviceNumber = 0;
+            
             waveInStream.WaveFormat = new WaveFormat(44100, 2);
             waveInStream.DataAvailable += new EventHandler<WaveInEventArgs>(waveInStream_DataAvailable);
             waveInStream.StartRecording();
 
         }
+        
         public static void waveInStream_DataAvailable(object sender, WaveInEventArgs e)
         {
             if (!MonitorAudioInput)
@@ -67,6 +68,12 @@ namespace UDPServer
                 Task.Factory.StartNew(() =>
                 {
                     AudioArray = e.Buffer;
+
+                    //TUTAJ JEST MIEJSCE NA KONWERSJĘ!
+
+                    //===================================
+
+
                     Console.WriteLine("Mam mikrofon" + AudioArray.Length);
                     using (WaveOut audioout = new WaveOut())
                     using (MemoryStream ms = new MemoryStream(AudioArray))
@@ -93,12 +100,20 @@ namespace UDPServer
         }
 
 
-
         public static void Main(string[] args)
         {
-
+            Console.WriteLine("Wpisz port");
+            port_Video = Int16.Parse(Console.ReadLine());
+            ep = new IPEndPoint(IPAddress.Parse("89.229.95.152"), port_Video);
             Console.WriteLine("Podaj hasło");
-            StartRecordin();
+            try
+            {
+                StartRecordin();
+            }
+            catch (Exception)
+            {
+            }
+
             AutodetectArduinoPort();
             try
             {
@@ -114,7 +129,7 @@ namespace UDPServer
             }
             catch (Exception)
             { Console.WriteLine("Nie wyłapałem żadnej kamerki ;_;"); }
-
+            
 
             Thread.Sleep(2000);
             while (true)
@@ -393,5 +408,8 @@ namespace UDPServer
 
             return null;
         }
+
+
+        //EENT HANDLER DLA POŁĄCZENIA
     }
 }

@@ -46,6 +46,11 @@
             this.But5 = new System.Windows.Forms.Button();
             this.But4 = new System.Windows.Forms.Button();
             this.But6 = new System.Windows.Forms.Button();
+            this.MachajButton = new System.Windows.Forms.Button();
+            this.WitajButton = new System.Windows.Forms.Button();
+            this.ŻegnajButton = new System.Windows.Forms.Button();
+            this.OtwórzButton = new System.Windows.Forms.Button();
+            this.ZamknijButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -80,7 +85,7 @@
             // 
             // Wbutton
             // 
-            this.Wbutton.Location = new System.Drawing.Point(65, 501);
+            this.Wbutton.Location = new System.Drawing.Point(66, 478);
             this.Wbutton.Name = "Wbutton";
             this.Wbutton.Size = new System.Drawing.Size(45, 33);
             this.Wbutton.TabIndex = 4;
@@ -89,7 +94,7 @@
             // 
             // Sbutton
             // 
-            this.Sbutton.Location = new System.Drawing.Point(65, 543);
+            this.Sbutton.Location = new System.Drawing.Point(66, 520);
             this.Sbutton.Name = "Sbutton";
             this.Sbutton.Size = new System.Drawing.Size(45, 33);
             this.Sbutton.TabIndex = 5;
@@ -98,7 +103,7 @@
             // 
             // Abutton
             // 
-            this.Abutton.Location = new System.Drawing.Point(14, 543);
+            this.Abutton.Location = new System.Drawing.Point(15, 520);
             this.Abutton.Name = "Abutton";
             this.Abutton.Size = new System.Drawing.Size(45, 33);
             this.Abutton.TabIndex = 6;
@@ -107,7 +112,7 @@
             // 
             // Dbutton
             // 
-            this.Dbutton.Location = new System.Drawing.Point(116, 543);
+            this.Dbutton.Location = new System.Drawing.Point(117, 520);
             this.Dbutton.Name = "Dbutton";
             this.Dbutton.Size = new System.Drawing.Size(45, 33);
             this.Dbutton.TabIndex = 7;
@@ -180,7 +185,7 @@
             // 
             // But8
             // 
-            this.But8.Location = new System.Drawing.Point(468, 499);
+            this.But8.Location = new System.Drawing.Point(469, 476);
             this.But8.Name = "But8";
             this.But8.Size = new System.Drawing.Size(43, 36);
             this.But8.TabIndex = 15;
@@ -189,7 +194,7 @@
             // 
             // But5
             // 
-            this.But5.Location = new System.Drawing.Point(468, 541);
+            this.But5.Location = new System.Drawing.Point(469, 518);
             this.But5.Name = "But5";
             this.But5.Size = new System.Drawing.Size(43, 36);
             this.But5.TabIndex = 16;
@@ -198,7 +203,7 @@
             // 
             // But4
             // 
-            this.But4.Location = new System.Drawing.Point(419, 541);
+            this.But4.Location = new System.Drawing.Point(420, 518);
             this.But4.Name = "But4";
             this.But4.Size = new System.Drawing.Size(43, 36);
             this.But4.TabIndex = 17;
@@ -207,18 +212,68 @@
             // 
             // But6
             // 
-            this.But6.Location = new System.Drawing.Point(517, 541);
+            this.But6.Location = new System.Drawing.Point(518, 518);
             this.But6.Name = "But6";
             this.But6.Size = new System.Drawing.Size(43, 36);
             this.But6.TabIndex = 18;
             this.But6.Text = "6";
             this.But6.UseVisualStyleBackColor = true;
             // 
+            // MachajButton
+            // 
+            this.MachajButton.Location = new System.Drawing.Point(12, 566);
+            this.MachajButton.Name = "MachajButton";
+            this.MachajButton.Size = new System.Drawing.Size(75, 23);
+            this.MachajButton.TabIndex = 19;
+            this.MachajButton.Text = "Machaj";
+            this.MachajButton.UseVisualStyleBackColor = true;
+            // 
+            // WitajButton
+            // 
+            this.WitajButton.Location = new System.Drawing.Point(93, 566);
+            this.WitajButton.Name = "WitajButton";
+            this.WitajButton.Size = new System.Drawing.Size(75, 23);
+            this.WitajButton.TabIndex = 20;
+            this.WitajButton.Text = "Witaj";
+            this.WitajButton.UseVisualStyleBackColor = true;
+            // 
+            // ŻegnajButton
+            // 
+            this.ŻegnajButton.Location = new System.Drawing.Point(174, 566);
+            this.ŻegnajButton.Name = "ŻegnajButton";
+            this.ŻegnajButton.Size = new System.Drawing.Size(75, 23);
+            this.ŻegnajButton.TabIndex = 21;
+            this.ŻegnajButton.Text = "Żegnaj";
+            this.ŻegnajButton.UseVisualStyleBackColor = true;
+            // 
+            // OtwórzButton
+            // 
+            this.OtwórzButton.Location = new System.Drawing.Point(255, 566);
+            this.OtwórzButton.Name = "OtwórzButton";
+            this.OtwórzButton.Size = new System.Drawing.Size(75, 23);
+            this.OtwórzButton.TabIndex = 22;
+            this.OtwórzButton.Text = "Otwórz";
+            this.OtwórzButton.UseVisualStyleBackColor = true;
+            // 
+            // ZamknijButton
+            // 
+            this.ZamknijButton.Location = new System.Drawing.Point(336, 566);
+            this.ZamknijButton.Name = "ZamknijButton";
+            this.ZamknijButton.Size = new System.Drawing.Size(75, 23);
+            this.ZamknijButton.TabIndex = 23;
+            this.ZamknijButton.Text = "Zamknij";
+            this.ZamknijButton.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1020, 587);
+            this.ClientSize = new System.Drawing.Size(1020, 601);
+            this.Controls.Add(this.ZamknijButton);
+            this.Controls.Add(this.OtwórzButton);
+            this.Controls.Add(this.ŻegnajButton);
+            this.Controls.Add(this.WitajButton);
+            this.Controls.Add(this.MachajButton);
             this.Controls.Add(this.But6);
             this.Controls.Add(this.But4);
             this.Controls.Add(this.But5);
@@ -266,6 +321,11 @@
         private System.Windows.Forms.Button But5;
         private System.Windows.Forms.Button But4;
         private System.Windows.Forms.Button But6;
+        private System.Windows.Forms.Button MachajButton;
+        private System.Windows.Forms.Button WitajButton;
+        private System.Windows.Forms.Button ŻegnajButton;
+        private System.Windows.Forms.Button OtwórzButton;
+        private System.Windows.Forms.Button ZamknijButton;
     }
 }
 

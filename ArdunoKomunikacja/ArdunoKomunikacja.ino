@@ -28,7 +28,7 @@ Serial.println(rfs);     // NA TYM POZIOMIE MAMY INTEGERA !
 
 //TU WYKONUJ REAKCJE ARDUINO!
 
-if(rfs==1){
+if(rfs==1 || rfs==2 || rfs==3 || rfs==4 || rfs==9 || rfs==10 || rfs==11 || rfs==12){
   digitalWrite(13,HIGH);
   digitalWrite(2,HIGH);
 }
@@ -37,13 +37,7 @@ else{
   digitalWrite(2,LOW);
 }
 
-if(rfs==2) // Testuj Arduino
-{
-    digitalWrite(2,HIGH);
-    delay(100);
-      digitalWrite(2,LOW);
-      delay(100);
-}
+
 
 }
 
