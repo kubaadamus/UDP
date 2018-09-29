@@ -14,6 +14,7 @@ using AForge.Video;
 using AForge.Video.DirectShow;
 using System.IO;
 using System.Drawing.Imaging;
+using NAudio.Wave;
 
 namespace Client
 {
@@ -43,47 +44,59 @@ namespace Client
         }
         void Listen()
         {
-            while (true)
-            {
-                byte[] receivedBytes = client.Receive(ref remoteip);
-                //Console.WriteLine(Encoding.ASCII.GetString(receivedBytes));
-                if (receivedBytes.Length > 30)
+                while (true)
                 {
-                    Thread ReceivedVideo = new Thread(() => ReceivedVideoHandler(receivedBytes));
-                    ReceivedVideo.Start();
+                    byte[] receivedBytes = client.Receive(ref remoteip);
+                    //Console.WriteLine(Encoding.ASCII.GetString(receivedBytes));
+                    if (receivedBytes.Length > 30 && receivedBytes.Length!=17640)
+                    {
+                        Thread ReceivedVideo = new Thread(() => ReceivedVideoHandler(receivedBytes));
+                        ReceivedVideo.Start();
+                    }
+                    else if (receivedBytes.Length == 17640)
+                    {
+                        Thread ReceivedAudio = new Thread(() => ReceivedAudioHandler(receivedBytes));
+                        ReceivedAudio.Start();
+                    }
+                    else if (receivedBytes.Length == 10)
+                    {
+                        Thread ReceivedSteering = new Thread(() => ReceivedSteeringHandler(receivedBytes));
+                        ReceivedSteering.Start();
+                    }
                 }
-                else if (receivedBytes.Length == 20)
-                {
-                    Thread ReceivedAudio = new Thread(() => ReceivedAudioHandler(receivedBytes));
-                    ReceivedAudio.Start();
-                }
-                else if (receivedBytes.Length == 10)
-                {
-                    Thread ReceivedSteering = new Thread(() => ReceivedSteeringHandler(receivedBytes));
-                    ReceivedSteering.Start();
-                }
-            }
         }
         //================================================ R E C E I V E D  D A T A =====================================//
         void ReceivedVideoHandler(byte[] receivedBytes)
         {
             //HDNADLE DATA//
             Console.WriteLine("Klient otrzymał VIDEO od serwera");
-            this.Invoke(new ShowMessageMethod(ShowVideoMsg), receivedBytes);
+            try
+            {
+                this.Invoke(new ShowMessageMethod(ShowVideoMsg), receivedBytes);
+            }
+            catch (Exception){}
             //============//
         }
         void ReceivedAudioHandler(byte[] reveivedBytes)
         {
             //HDNADLE DATA//
             Console.WriteLine("Klient otrzymał AUDIO od serwera");
-            this.Invoke(new ShowMessageMethod(ShowAudioMsg), reveivedBytes);
+            try
+            {
+                this.Invoke(new ShowMessageMethod(ShowAudioMsg), reveivedBytes);
+            }
+            catch (Exception){}
             //============//
         }
         void ReceivedSteeringHandler(byte[] reveivedBytes)
         {
             //HDNADLE DATA//
             Console.WriteLine("Klient otrzymał STEROWANIE od serwera");
-            this.Invoke(new ShowMessageMethod(ShowSteeringMsg), reveivedBytes);
+            try
+            {
+                this.Invoke(new ShowMessageMethod(ShowSteeringMsg), reveivedBytes);
+            }
+            catch (Exception){}
             //============//
         }
         public void ShowVideoMsg(byte[] msg)
@@ -94,8 +107,9 @@ namespace Client
         }
         public void ShowAudioMsg(byte[] msg)
         {
-            textBox1.AppendText("Otrzymano video :D ");
+            textBox1.AppendText("Otrzymano AUDIO :D ");
             textBox1.AppendText(Environment.NewLine);
+            PlayReceivedAudio(msg);
         }
         public void ShowSteeringMsg(byte[] msg)
         {
@@ -103,18 +117,12 @@ namespace Client
             textBox1.AppendText(Environment.NewLine);
         }
         //===============================================================================================================//
-        public static Image byteArrayToImage(byte[] byteArrayIn)
-        {
-            ImageConverter imageConverter = new System.Drawing.ImageConverter();
-            Image image = imageConverter.ConvertFrom(byteArrayIn) as Image;
 
-            return image;
-        }
         //===================================== V I D E O  D E V I C E ==================================================//
         public FilterInfoCollection videoDevicesList;
         public IVideoSource videoSource;
         public byte[] ImageArray; // Tablica która zostanie zapełniona danymi z kamerki i wyslana w sieć
-        public long VideoQuality = 10L;
+        public long VideoQuality = 5L;
         public void Instantiate_Camera()
         {
             videoDevicesList = new FilterInfoCollection(FilterCategory.VideoInputDevice);
@@ -162,6 +170,51 @@ namespace Client
                 return ms.ToArray();
             }
         }
+        public static Image byteArrayToImage(byte[] byteArrayIn)
+        {
+            try
+            {
+                ImageConverter imageConverter = new System.Drawing.ImageConverter();
+                Image image = imageConverter.ConvertFrom(byteArrayIn) as Image;
+                return image;
+            }
+            catch (Exception){}
+            Bitmap newie = new Bitmap(16, 16, PixelFormat.Alpha);
+            return newie;
+        }
         //===============================================================================================================//
+
+        //=====================================A U D I O  D E V I C E===========================================//
+        public WaveInEvent waveInStream;
+        public WaveOut audioout = new WaveOut();
+        public WaveFormat wf = new WaveFormat();
+        public byte[] AudioArray; //Tablica do której recorder audio będzie wpychał bajty z mikrofonu;
+        public bool MonitorAudioInput = true;
+        //====================================== P L A Y ========================================================//
+        public void PlayReceivedAudio(byte[] ReceivedAudioArray)
+        {
+            Task.Factory.StartNew(() =>
+            {
+                using (WaveOut audioout = new WaveOut())
+                using (MemoryStream ms = new MemoryStream(ReceivedAudioArray))
+                {
+                    ManualResetEvent semaphoreObject = new ManualResetEvent(false);
+                    audioout.DesiredLatency = 100;
+                    RawSourceWaveStream rsws = new RawSourceWaveStream(ms, wf);
+                    IWaveProvider provider = rsws;
+                    audioout.Init(provider);
+                    EventHandler<NAudio.Wave.StoppedEventArgs> handler = (o, k) =>
+                    {
+                        semaphoreObject.Set();
+                    };
+                    audioout.PlaybackStopped += handler;
+                    audioout.Play();
+                    //while (audioout.PlaybackState != PlaybackState.Stopped) ;
+                    semaphoreObject.WaitOne();
+                    audioout.PlaybackStopped -= handler;
+                }
+            });
+        }
+
     }
 }

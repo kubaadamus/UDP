@@ -14,6 +14,7 @@ using AForge.Video;
 using AForge.Video.DirectShow;
 using System.IO;
 using System.Drawing.Imaging;
+using NAudio.Wave;
 
 namespace Server
 {
@@ -29,6 +30,7 @@ namespace Server
             Thread ListenThread = new Thread(Listen);
             ListenThread.Start();
             Instantiate_Camera();
+            StartRecordin();
         }
         public bool Send(byte[] DataForClient)
         {
@@ -65,11 +67,6 @@ namespace Server
                     }
                 }
             }
-        }
-        public void ShowMsg(byte[] msg)
-        {
-            textBox1.AppendText(Encoding.ASCII.GetString(msg));
-            textBox1.AppendText(Environment.NewLine);
         }
         //================================================ R E C E I V E D  D A T A =====================================//
         void ReceivedVideoHandler(byte[] receivedBytes)
@@ -110,18 +107,12 @@ namespace Server
             textBox1.AppendText(Environment.NewLine);
         }
         //===============================================================================================================//
-        public static Image byteArrayToImage(byte[] byteArrayIn)
-        {
-            ImageConverter imageConverter = new System.Drawing.ImageConverter();
-            Image image = imageConverter.ConvertFrom(byteArrayIn) as Image;
 
-            return image;
-        }
         //===================================== V I D E O  D E V I C E ==================================================//
         public FilterInfoCollection videoDevicesList;
         public IVideoSource videoSource;
         public byte[] ImageArray; // Tablica która zostanie zapełniona danymi z kamerki i wyslana w sieć
-        public long VideoQuality = 10L;
+        public long VideoQuality = 60L;
         public void Instantiate_Camera()
         {
             videoDevicesList = new FilterInfoCollection(FilterCategory.VideoInputDevice);
@@ -169,6 +160,64 @@ namespace Server
                 return ms.ToArray();
             }
         }
+        public static Image byteArrayToImage(byte[] byteArrayIn)
+        {
+            ImageConverter imageConverter = new System.Drawing.ImageConverter();
+            Image image = imageConverter.ConvertFrom(byteArrayIn) as Image;
+
+            return image;
+        }
         //===============================================================================================================//
+
+        //=====================================A U D I O  D E V I C E ===================================================//
+        public WaveInEvent waveInStream;
+        public WaveOut audioout = new WaveOut();
+        public WaveFormat wf = new WaveFormat();
+        public byte[] AudioArray; //Tablica do której recorder audio będzie wpychał bajty z mikrofonu;
+        public bool MonitorAudioInput = false;
+        public void StartRecordin()
+        {
+            audioout.DesiredLatency = 100;
+            waveInStream = new WaveInEvent();
+            waveInStream.DeviceNumber = 0;
+            waveInStream.WaveFormat = new WaveFormat(44100, 2);
+            waveInStream.DataAvailable += new EventHandler<WaveInEventArgs>(waveInStream_DataAvailable);
+            waveInStream.StartRecording();
+        }
+        public void waveInStream_DataAvailable(object sender, WaveInEventArgs e)
+        {
+            AudioArray = e.Buffer;
+            if (MonitorAudioInput)
+            {
+                Task.Factory.StartNew(() =>
+                {
+                    
+
+                    //TUTAJ JEST MIEJSCE NA KONWERSJĘ!
+                    //===================================
+                    Console.WriteLine("Mam mikrofon" + AudioArray.Length);
+                    using (WaveOut audioout = new WaveOut())
+                    using (MemoryStream ms = new MemoryStream(AudioArray))
+                    {
+                        ManualResetEvent semaphoreObject = new ManualResetEvent(false);
+                        audioout.DesiredLatency = 100;
+                        RawSourceWaveStream rsws = new RawSourceWaveStream(ms, wf);
+                        IWaveProvider provider = rsws;
+                        audioout.Init(provider);
+                        EventHandler<NAudio.Wave.StoppedEventArgs> handler = (o, k) =>
+                        {
+                            semaphoreObject.Set();
+                        };
+                        audioout.PlaybackStopped += handler;
+                        audioout.Play();
+                        //while (audioout.PlaybackState != PlaybackState.Stopped) ;
+                        semaphoreObject.WaitOne();
+                        audioout.PlaybackStopped -= handler;
+
+                    }
+                });
+            }
+            Send(AudioArray);
+        }
     }
 }

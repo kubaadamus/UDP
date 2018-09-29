@@ -23,7 +23,6 @@ namespace UDPServer
         public static WaveOut audioout = new WaveOut();
         public static WaveFormat wf = new WaveFormat();
         public static int port_Video = 16012;
-        public static int port_Audio = 16012;
         public static IPEndPoint ep;
         public static Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         public static byte[] ImageArray; // Tablica która zostanie zapełniona danymi z kamerki i wyslana w sieć
