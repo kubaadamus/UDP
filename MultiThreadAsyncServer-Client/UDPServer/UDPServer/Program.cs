@@ -14,10 +14,8 @@ namespace UDPServer
     {
         public static IPEndPoint ep = new IPEndPoint(IPAddress.Parse("89.229.95.152"), 16010);
         public static Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-        public static int count = 0;
         public static Random rand = new Random();
         public static byte[] DataForClient;
-
 
         static void Main(string[] args)
         {
@@ -25,8 +23,6 @@ namespace UDPServer
             TalkThread.Start();
             Thread ListenThread = new Thread(Listen);
             ListenThread.Start();
-
-
         }
         public static void Talk()
         {
@@ -34,14 +30,13 @@ namespace UDPServer
             {
                 if (Send())
                 {
-                    count++;
                     //Console.WriteLine($"{count} Packets have been sent");
                     Thread.Sleep(10);
                 }
                 else
                 {
                     Console.WriteLine($"Error whule sending packet!", ConsoleColor.Red);
-                    Thread.Sleep(30);
+                    Thread.Sleep(10);
                 }
             }
         }
@@ -74,7 +69,6 @@ namespace UDPServer
         }
         public static bool Send()
         {
-
             int randomInt = rand.Next(0, 3);
 
             if (randomInt == 0)
@@ -94,18 +88,12 @@ namespace UDPServer
                 DataForClient = Encoding.ASCII.GetBytes("0");
             }
 
-
-
             try
             {
                 sock.SendTo(DataForClient, ep);
                 return true;
             }
-            catch (Exception sysex)
-            {
-
-                return false;
-            }
+            catch (Exception sysex){return false;}
         }
         static void ReceivedVideoHandler(byte[] receivedBytes)
         {
@@ -125,6 +113,5 @@ namespace UDPServer
             Console.WriteLine("Server odebral sterowanie od klienta");
             //============//
         }
-
     }
 }
