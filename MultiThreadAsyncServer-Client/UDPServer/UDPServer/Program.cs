@@ -12,14 +12,12 @@ namespace UDPServer
 {
     class Program
     {
-        public static string ip;
-        public static int count = 0;
-        public static int port = 16010;
-
-        public static Random rand = new Random();
-        public static byte[] DataForClient;
         public static IPEndPoint ep = new IPEndPoint(IPAddress.Parse("89.229.95.152"), 16010);
         public static Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        public static int count = 0;
+        public static Random rand = new Random();
+        public static byte[] DataForClient;
+
 
         static void Main(string[] args)
         {
@@ -38,7 +36,7 @@ namespace UDPServer
                 {
                     count++;
                     //Console.WriteLine($"{count} Packets have been sent");
-                    Thread.Sleep(1000);
+                    Thread.Sleep(10);
                 }
                 else
                 {
@@ -47,12 +45,11 @@ namespace UDPServer
                 }
             }
         }
-
         public static void Listen()
         {
-            while(true)
+            while (true)
             {
-                if(sock.Available>0)
+                if (sock.Available > 0)
                 {
                     byte[] ReceivedBytes = new byte[sock.Available];
                     sock.Receive(ReceivedBytes);

@@ -17,15 +17,14 @@ namespace UDPClient_Simiple
         public static int count = 0;
         public static Random rand = new Random();
         public static byte[] DataForServer;
+
         static void Main(string[] args)
         {
-            Console.WriteLine("Waiting for connection");
             Thread ListenTherad = new Thread(Listen);
             ListenTherad.Start();
             Thread TalkThread = new Thread(Talk);
             TalkThread.Start();
         }
-
         static void Listen()
         {
             while (true)
@@ -51,7 +50,6 @@ namespace UDPClient_Simiple
 
             }
         }
-
         static void ReceivedVideoHandler(byte[] receivedBytes)
         {
             //HDNADLE DATA//
@@ -78,7 +76,7 @@ namespace UDPClient_Simiple
                 {
                     count++;
                     //Console.WriteLine($"{count} Packets have been sent");
-                    Thread.Sleep(1000);
+                    Thread.Sleep(10);
                 }
                 else
                 {
