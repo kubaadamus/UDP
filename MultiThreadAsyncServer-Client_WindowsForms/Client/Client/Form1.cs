@@ -1,33 +1,43 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 
-
-namespace UDPClient_Simiple
+namespace Client
 {
-    class Program
+
+    public partial class Form1 : Form
     {
         public static UdpClient client = new UdpClient(16010);
         public static IPEndPoint remoteip = new IPEndPoint(IPAddress.Any, 16010);
-
-        static void Main(string[] args)
+        delegate void ShowMessageMethod(byte[] msg);
+        public Form1()
         {
-            Thread ListenTherad = new Thread(Listen);
-            ListenTherad.Start();
+            InitializeComponent();
             Thread TalkThread = new Thread(Talk);
             TalkThread.Start();
+            Thread ListenThread = new Thread(Listen);
+            ListenThread.Start();
         }
-        static void Listen()
+        public void ShowMsg(byte[] msg)
+        {
+            textBox1.AppendText(Encoding.ASCII.GetString(msg));
+        }
+        void Listen()
         {
             while (true)
             {
                 byte[] receivedBytes = client.Receive(ref remoteip);
                 Console.WriteLine(Encoding.ASCII.GetString(receivedBytes));
+                this.Invoke(new ShowMessageMethod(ShowMsg), receivedBytes);
                 if (receivedBytes.Length > 30)
                 {
                     Thread ReceivedVideo = new Thread(() => ReceivedVideoHandler(receivedBytes));
@@ -80,7 +90,7 @@ namespace UDPClient_Simiple
                 client.Send(DataForServer, DataForServer.Length, remoteip);
                 return true;
             }
-            catch (Exception sysex){return false;}
+            catch (Exception sysex) { return false; }
         }
     }
 }
