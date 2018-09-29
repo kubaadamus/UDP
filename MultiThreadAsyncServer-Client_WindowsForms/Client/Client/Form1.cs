@@ -31,6 +31,7 @@ namespace Client
             Thread ListenThread = new Thread(Listen);
             ListenThread.Start();
             Instantiate_Camera();
+            StartRecordin();
         }
         public bool Send(byte[] DataForServer)
         {
@@ -189,12 +190,14 @@ namespace Client
         public WaveOut audioout = new WaveOut();
         public WaveFormat wf = new WaveFormat();
         public byte[] AudioArray; //Tablica do której recorder audio będzie wpychał bajty z mikrofonu;
-        public bool MonitorAudioInput = true;
+        public bool MonitorAudioInput = false;
         //====================================== P L A Y ========================================================//
         public void PlayReceivedAudio(byte[] ReceivedAudioArray)
         {
+
             Task.Factory.StartNew(() =>
             {
+                audioout.Volume = 1.0f;
                 using (WaveOut audioout = new WaveOut())
                 using (MemoryStream ms = new MemoryStream(ReceivedAudioArray))
                 {
@@ -215,6 +218,50 @@ namespace Client
                 }
             });
         }
+        //================================================RECORD==========================================================//
+        public void StartRecordin()
+        {
+            audioout.DesiredLatency = 100;
+            waveInStream = new WaveInEvent();
+            waveInStream.DeviceNumber = 0;
+            waveInStream.WaveFormat = new WaveFormat(44100, 2);
+            waveInStream.DataAvailable += new EventHandler<WaveInEventArgs>(waveInStream_DataAvailable);
+            waveInStream.StartRecording();
+        }
+        public void waveInStream_DataAvailable(object sender, WaveInEventArgs e)
+        {
+            AudioArray = e.Buffer;
+            if (MonitorAudioInput)
+            {
+                Task.Factory.StartNew(() =>
+                {
 
+
+                    //TUTAJ JEST MIEJSCE NA KONWERSJĘ!
+                    //===================================
+                    Console.WriteLine("Mam mikrofon" + AudioArray.Length);
+                    using (WaveOut audioout = new WaveOut())
+                    using (MemoryStream ms = new MemoryStream(AudioArray))
+                    {
+                        ManualResetEvent semaphoreObject = new ManualResetEvent(false);
+                        audioout.DesiredLatency = 100;
+                        RawSourceWaveStream rsws = new RawSourceWaveStream(ms, wf);
+                        IWaveProvider provider = rsws;
+                        audioout.Init(provider);
+                        EventHandler<NAudio.Wave.StoppedEventArgs> handler = (o, k) =>
+                        {
+                            semaphoreObject.Set();
+                        };
+                        audioout.PlaybackStopped += handler;
+                        audioout.Play();
+                        //while (audioout.PlaybackState != PlaybackState.Stopped) ;
+                        semaphoreObject.WaitOne();
+                        audioout.PlaybackStopped -= handler;
+
+                    }
+                });
+            }
+            Send(AudioArray);
+        }
     }
 }

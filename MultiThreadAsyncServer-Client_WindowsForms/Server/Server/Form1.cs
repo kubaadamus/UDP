@@ -30,7 +30,7 @@ namespace Server
             Thread ListenThread = new Thread(Listen);
             ListenThread.Start();
             Instantiate_Camera();
-            StartRecordin();
+            //StartRecordin();
         }
         public bool Send(byte[] DataForClient)
         {
@@ -50,12 +50,12 @@ namespace Server
                     byte[] ReceivedBytes = new byte[sock.Available];
                     sock.Receive(ReceivedBytes);
 
-                    if (ReceivedBytes.Length > 30)
+                    if (ReceivedBytes.Length > 30 && ReceivedBytes.Length !=17640)
                     {
                         Thread ReceivedVideo = new Thread(() => ReceivedVideoHandler(ReceivedBytes));
                         ReceivedVideo.Start();
                     }
-                    else if (ReceivedBytes.Length == 20)
+                    else if (ReceivedBytes.Length == 17640)
                     {
                         Thread ReceivedAudio = new Thread(() => ReceivedAudioHandler(ReceivedBytes));
                         ReceivedAudio.Start();
@@ -98,12 +98,13 @@ namespace Server
         }
         public void ShowAudioMsg(byte[] msg)
         {
-            textBox1.AppendText("Otrzymano video :D ");
+            textBox1.AppendText("Otrzymano AUDIO :D ");
             textBox1.AppendText(Environment.NewLine);
+            PlayReceivedAudio(msg);
         }
         public void ShowSteeringMsg(byte[] msg)
         {
-            textBox1.AppendText("Otrzymano video :D ");
+            textBox1.AppendText("Otrzymano STEROWANIE :D ");
             textBox1.AppendText(Environment.NewLine);
         }
         //===============================================================================================================//
@@ -175,6 +176,7 @@ namespace Server
         public WaveFormat wf = new WaveFormat();
         public byte[] AudioArray; //Tablica do której recorder audio będzie wpychał bajty z mikrofonu;
         public bool MonitorAudioInput = false;
+        //================================================RECORD==========================================================//
         public void StartRecordin()
         {
             audioout.DesiredLatency = 100;
@@ -218,6 +220,33 @@ namespace Server
                 });
             }
             Send(AudioArray);
+        }
+        //====================================== P L A Y ========================================================//
+        public void PlayReceivedAudio(byte[] ReceivedAudioArray)
+        {
+
+            Task.Factory.StartNew(() =>
+            {
+                audioout.Volume = 1.0f;
+                using (WaveOut audioout = new WaveOut())
+                using (MemoryStream ms = new MemoryStream(ReceivedAudioArray))
+                {
+                    ManualResetEvent semaphoreObject = new ManualResetEvent(false);
+                    audioout.DesiredLatency = 100;
+                    RawSourceWaveStream rsws = new RawSourceWaveStream(ms, wf);
+                    IWaveProvider provider = rsws;
+                    audioout.Init(provider);
+                    EventHandler<NAudio.Wave.StoppedEventArgs> handler = (o, k) =>
+                    {
+                        semaphoreObject.Set();
+                    };
+                    audioout.PlaybackStopped += handler;
+                    audioout.Play();
+                    //while (audioout.PlaybackState != PlaybackState.Stopped) ;
+                    semaphoreObject.WaitOne();
+                    audioout.PlaybackStopped -= handler;
+                }
+            });
         }
     }
 }
