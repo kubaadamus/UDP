@@ -37,7 +37,7 @@ namespace UDPServer
                 if (Send())
                 {
                     count++;
-                    Console.WriteLine($"{count} Packets have been sent");
+                    //Console.WriteLine($"{count} Packets have been sent");
                     Thread.Sleep(1000);
                 }
                 else
@@ -57,17 +57,17 @@ namespace UDPServer
                     byte[] ReceivedBytes = new byte[sock.Available];
                     sock.Receive(ReceivedBytes);
                     //Console.WriteLine(Encoding.ASCII.GetString(ReceivedBytes));
-                    if (Encoding.ASCII.GetString(ReceivedBytes) == "ClientReceived_VIDEO")
+                    if (ReceivedBytes.Length > 30)
                     {
                         Thread ReceivedVideo = new Thread(() => ReceivedVideoHandler(ReceivedBytes));
                         ReceivedVideo.Start();
                     }
-                    else if (Encoding.ASCII.GetString(ReceivedBytes) == "ClientReceived_AUDIO")
+                    else if (ReceivedBytes.Length == 20)
                     {
                         Thread ReceivedAudio = new Thread(() => ReceivedAudioHandler(ReceivedBytes));
                         ReceivedAudio.Start();
                     }
-                    else if (Encoding.ASCII.GetString(ReceivedBytes) == "ClientReceived_STEERING")
+                    else if (ReceivedBytes.Length == 10)
                     {
                         Thread ReceivedSteering = new Thread(() => ReceivedSteeringHandler(ReceivedBytes));
                         ReceivedSteering.Start();
@@ -115,21 +115,18 @@ namespace UDPServer
             //HDNADLE DATA//
             Console.WriteLine("Server odebral video od klienta");
             //============//
-            byte[] DataForServer = Encoding.ASCII.GetBytes("ServerReceived_VIDEO_from_client");
         }
         static void ReceivedAudioHandler(byte[] reveivedBytes)
         {
             //HDNADLE DATA//
             Console.WriteLine("Server odebral audio od klienta");
             //============//
-            byte[] DataForServer = Encoding.ASCII.GetBytes("ServerReceived_AUDIO_from_client");
         }
         static void ReceivedSteeringHandler(byte[] reveivedBytes)
         {
             //HDNADLE DATA//
             Console.WriteLine("Server odebral sterowanie od klienta");
             //============//
-            byte[] DataForServer = Encoding.ASCII.GetBytes("ServerReceived_STEERING_from_client");
         }
 
     }

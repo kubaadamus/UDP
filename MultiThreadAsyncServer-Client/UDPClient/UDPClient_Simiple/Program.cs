@@ -15,11 +15,15 @@ namespace UDPClient_Simiple
         public static UdpClient client = new UdpClient(16010);
         public static IPEndPoint remoteip = new IPEndPoint(IPAddress.Any, 16010);
         public static int count = 0;
+        public static Random rand = new Random();
+        public static byte[] DataForServer;
         static void Main(string[] args)
         {
             Console.WriteLine("Waiting for connection");
             Thread ListenTherad = new Thread(Listen);
             ListenTherad.Start();
+            Thread TalkThread = new Thread(Talk);
+            TalkThread.Start();
         }
 
         static void Listen()
@@ -53,24 +57,70 @@ namespace UDPClient_Simiple
             //HDNADLE DATA//
             Console.WriteLine("Klient otrzymał VIDEO od serwera");
             //============//
-            byte[] DataForServer = Encoding.ASCII.GetBytes("ClientReceived_VIDEO");
-            client.Send(DataForServer, DataForServer.Length, remoteip);
         }
         static void ReceivedAudioHandler(byte[] reveivedBytes)
         {
             //HDNADLE DATA//
             Console.WriteLine("Klient otrzymał AUDIO od serwera");
             //============//
-            byte[] DataForServer = Encoding.ASCII.GetBytes("ClientReceived_AUDIO");
-            client.Send(DataForServer, DataForServer.Length, remoteip);
         }
         static void ReceivedSteeringHandler(byte[] reveivedBytes)
         {
             //HDNADLE DATA//
             Console.WriteLine("Klient otrzymał STEROWANIE od serwera");
             //============//
-            byte[] DataForServer = Encoding.ASCII.GetBytes("ClientReceived_STEERING");
-            client.Send(DataForServer, DataForServer.Length, remoteip);
+        }
+        public static void Talk()
+        {
+            while (true)
+            {
+                if (Send())
+                {
+                    count++;
+                    //Console.WriteLine($"{count} Packets have been sent");
+                    Thread.Sleep(1000);
+                }
+                else
+                {
+                    Console.WriteLine($"Error whule sending packet!", ConsoleColor.Red);
+                    Thread.Sleep(30);
+                }
+            }
+        }
+        public static bool Send()
+        {
+
+            int randomInt = rand.Next(0, 3);
+
+            if (randomInt == 0)
+            {
+                DataForServer = Encoding.ASCII.GetBytes("0123456789012345678901234567890123456789");
+            }
+            else if (randomInt == 1)
+            {
+                DataForServer = Encoding.ASCII.GetBytes("01234567890123456789");
+            }
+            else if (randomInt == 2)
+            {
+                DataForServer = Encoding.ASCII.GetBytes("0123456789");
+            }
+            else
+            {
+                DataForServer = Encoding.ASCII.GetBytes("0");
+            }
+
+
+
+            try
+            {
+                client.Send(DataForServer, DataForServer.Length, remoteip);
+                return true;
+            }
+            catch (Exception sysex)
+            {
+
+                return false;
+            }
         }
     }
 }
