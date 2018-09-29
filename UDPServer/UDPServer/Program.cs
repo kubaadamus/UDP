@@ -7,29 +7,23 @@ using System.Threading;
 using System.Net;
 using System.Net.Sockets;
 using System.IO;
-using AForge.Video;
-using AForge.Video.DirectShow;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO.Ports;
 using System.Management;
 using NAudio.Wave;
+using AForge.Video;
+using AForge.Video.DirectShow;
 
 namespace UDPServer
 {
     class Program
     {
-
-
         public static WaveInEvent waveInStream;
         public static WaveOut audioout = new WaveOut();
         public static WaveFormat wf = new WaveFormat();
-
-
         public static int port_Video = 16012;
         public static int port_Audio = 16012;
-
-
         public static IPEndPoint ep;
         public static Socket sock = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         public static byte[] ImageArray; // Tablica która zostanie zapełniona danymi z kamerki i wyslana w sieć
@@ -54,7 +48,6 @@ namespace UDPServer
             waveInStream.StartRecording();
 
         }
-        
         public static void waveInStream_DataAvailable(object sender, WaveInEventArgs e)
         {
             if (!MonitorAudioInput)
@@ -98,8 +91,6 @@ namespace UDPServer
 
             
         }
-
-
         public static void Main(string[] args)
         {
             Console.WriteLine("Wpisz port");
@@ -293,9 +284,7 @@ namespace UDPServer
             serial1.Write(inputString);
 
         }
-
-        public static void port_OnReceiveDatazz(object sender,
-                                          SerialDataReceivedEventArgs e)
+        public static void port_OnReceiveDatazz(object sender,                           SerialDataReceivedEventArgs e)
         {
 
             byte[] buf = new byte[serial1.BytesToRead];
@@ -358,8 +347,6 @@ namespace UDPServer
         //
         //    return image;
         //}
-
-
         public static bool Send(byte[] arrayToSend)
         {
             try
@@ -373,9 +360,7 @@ namespace UDPServer
                 return false;
             }
         }
-
         //========================= ZDOBĄDŹ LISTĘ URZĄDZEŃ USB ========================//
-
         public static string AutodetectArduinoPort()
         {
             ManagementScope connectionScope = new ManagementScope();
@@ -408,8 +393,6 @@ namespace UDPServer
 
             return null;
         }
-
-
         //EENT HANDLER DLA POŁĄCZENIA
     }
 }

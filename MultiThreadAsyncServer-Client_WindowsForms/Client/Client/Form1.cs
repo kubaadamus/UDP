@@ -16,28 +16,32 @@ namespace Client
 
     public partial class Form1 : Form
     {
-        public static UdpClient client = new UdpClient(16010);
-        public static IPEndPoint remoteip = new IPEndPoint(IPAddress.Any, 16010);
+        public UdpClient client = new UdpClient(16010);
+        public IPEndPoint remoteip = new IPEndPoint(IPAddress.Any, 16010);
         delegate void ShowMessageMethod(byte[] msg);
+
         public Form1()
         {
             InitializeComponent();
-            Thread TalkThread = new Thread(Talk);
-            TalkThread.Start();
             Thread ListenThread = new Thread(Listen);
             ListenThread.Start();
         }
-        public void ShowMsg(byte[] msg)
+        public bool Send(byte[] DataForServer)
         {
-            textBox1.AppendText(Encoding.ASCII.GetString(msg));
+
+            try
+            {
+                client.Send(DataForServer, DataForServer.Length, remoteip);
+                return true;
+            }
+            catch (Exception sysex) { return false; }
         }
         void Listen()
         {
             while (true)
             {
                 byte[] receivedBytes = client.Receive(ref remoteip);
-                Console.WriteLine(Encoding.ASCII.GetString(receivedBytes));
-                this.Invoke(new ShowMessageMethod(ShowMsg), receivedBytes);
+                //Console.WriteLine(Encoding.ASCII.GetString(receivedBytes));
                 if (receivedBytes.Length > 30)
                 {
                     Thread ReceivedVideo = new Thread(() => ReceivedVideoHandler(receivedBytes));
@@ -55,42 +59,49 @@ namespace Client
                 }
             }
         }
-        static void ReceivedVideoHandler(byte[] receivedBytes)
+        //================================================ R E C E I V E D  D A T A =====================================//
+        void ReceivedVideoHandler(byte[] receivedBytes)
         {
             //HDNADLE DATA//
             Console.WriteLine("Klient otrzymał VIDEO od serwera");
+            this.Invoke(new ShowMessageMethod(ShowVideoMsg), receivedBytes);
             //============//
         }
-        static void ReceivedAudioHandler(byte[] reveivedBytes)
+        void ReceivedAudioHandler(byte[] reveivedBytes)
         {
             //HDNADLE DATA//
             Console.WriteLine("Klient otrzymał AUDIO od serwera");
             //============//
         }
-        static void ReceivedSteeringHandler(byte[] reveivedBytes)
+        void ReceivedSteeringHandler(byte[] reveivedBytes)
         {
             //HDNADLE DATA//
             Console.WriteLine("Klient otrzymał STEROWANIE od serwera");
             //============//
         }
-        public static void Talk()
+        public void ShowVideoMsg(byte[] msg)
         {
-            while (true)
-            {
-                string test = DateTime.Now.ToString();
-                Send(Encoding.ASCII.GetBytes(test));
-                Thread.Sleep(40);
-            }
+            textBox1.AppendText("Otrzymano video :D ");
+            textBox1.AppendText(Environment.NewLine);
+            pictureBox1.Image = byteArrayToImage(msg);
         }
-        public static bool Send(byte[] DataForServer)
+        public void ShowAudioMsg(byte[] msg)
         {
+            textBox1.AppendText("Otrzymano video :D ");
+            textBox1.AppendText(Environment.NewLine);
+        }
+        public void ShowSteeringMsg(byte[] msg)
+        {
+            textBox1.AppendText("Otrzymano video :D ");
+            textBox1.AppendText(Environment.NewLine);
+        }
+        //===============================================================================================================//
+        public static Image byteArrayToImage(byte[] byteArrayIn)
+        {
+            ImageConverter imageConverter = new System.Drawing.ImageConverter();
+            Image image = imageConverter.ConvertFrom(byteArrayIn) as Image;
 
-            try
-            {
-                client.Send(DataForServer, DataForServer.Length, remoteip);
-                return true;
-            }
-            catch (Exception sysex) { return false; }
+            return image;
         }
     }
 }
