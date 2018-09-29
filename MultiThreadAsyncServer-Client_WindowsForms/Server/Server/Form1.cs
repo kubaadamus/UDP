@@ -47,8 +47,7 @@ namespace Server
                 {
                     byte[] ReceivedBytes = new byte[sock.Available];
                     sock.Receive(ReceivedBytes);
-                    Console.WriteLine(Encoding.ASCII.GetString(ReceivedBytes));
-                    this.Invoke(new ShowMessageMethod(ShowMsg), ReceivedBytes);
+
                     if (ReceivedBytes.Length > 30)
                     {
                         Thread ReceivedVideo = new Thread(() => ReceivedVideoHandler(ReceivedBytes));
@@ -77,24 +76,28 @@ namespace Server
         {
             //HDNADLE DATA//
             Console.WriteLine("Server odebral video od klienta");
+            this.Invoke(new ShowMessageMethod(ShowVideoMsg), receivedBytes);
             //============//
         }
         void ReceivedAudioHandler(byte[] reveivedBytes)
         {
             //HDNADLE DATA//
             Console.WriteLine("Server odebral audio od klienta");
+            this.Invoke(new ShowMessageMethod(ShowAudioMsg), reveivedBytes);
             //============//
         }
         void ReceivedSteeringHandler(byte[] reveivedBytes)
         {
             //HDNADLE DATA//
             Console.WriteLine("Server odebral sterowanie od klienta");
+            this.Invoke(new ShowMessageMethod(ShowSteeringMsg), reveivedBytes);
             //============//
         }
         public void ShowVideoMsg(byte[] msg)
         {
             textBox1.AppendText("Otrzymano video :D ");
             textBox1.AppendText(Environment.NewLine);
+            pictureBox1.Image = byteArrayToImage(msg);
         }
         public void ShowAudioMsg(byte[] msg)
         {
@@ -107,6 +110,13 @@ namespace Server
             textBox1.AppendText(Environment.NewLine);
         }
         //===============================================================================================================//
+        public static Image byteArrayToImage(byte[] byteArrayIn)
+        {
+            ImageConverter imageConverter = new System.Drawing.ImageConverter();
+            Image image = imageConverter.ConvertFrom(byteArrayIn) as Image;
+
+            return image;
+        }
         //===================================== V I D E O  D E V I C E ==================================================//
         public FilterInfoCollection videoDevicesList;
         public IVideoSource videoSource;

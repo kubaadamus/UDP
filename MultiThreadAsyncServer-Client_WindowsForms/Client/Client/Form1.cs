@@ -10,6 +10,10 @@ using System.Windows.Forms;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using AForge.Video;
+using AForge.Video.DirectShow;
+using System.IO;
+using System.Drawing.Imaging;
 
 namespace Client
 {
@@ -25,6 +29,7 @@ namespace Client
             InitializeComponent();
             Thread ListenThread = new Thread(Listen);
             ListenThread.Start();
+            Instantiate_Camera();
         }
         public bool Send(byte[] DataForServer)
         {
@@ -71,12 +76,14 @@ namespace Client
         {
             //HDNADLE DATA//
             Console.WriteLine("Klient otrzymał AUDIO od serwera");
+            this.Invoke(new ShowMessageMethod(ShowAudioMsg), reveivedBytes);
             //============//
         }
         void ReceivedSteeringHandler(byte[] reveivedBytes)
         {
             //HDNADLE DATA//
             Console.WriteLine("Klient otrzymał STEROWANIE od serwera");
+            this.Invoke(new ShowMessageMethod(ShowSteeringMsg), reveivedBytes);
             //============//
         }
         public void ShowVideoMsg(byte[] msg)
@@ -103,5 +110,58 @@ namespace Client
 
             return image;
         }
+        //===================================== V I D E O  D E V I C E ==================================================//
+        public FilterInfoCollection videoDevicesList;
+        public IVideoSource videoSource;
+        public byte[] ImageArray; // Tablica która zostanie zapełniona danymi z kamerki i wyslana w sieć
+        public long VideoQuality = 10L;
+        public void Instantiate_Camera()
+        {
+            videoDevicesList = new FilterInfoCollection(FilterCategory.VideoInputDevice);
+            foreach (FilterInfo videoDevice in videoDevicesList)
+            {
+                Console.WriteLine(videoDevice.Name);
+            }
+            if (videoDevicesList.Count > 0)
+            {
+                Console.WriteLine("mamy kamerek: " + videoDevicesList.Count);
+            }
+            else
+            {
+                Console.WriteLine("Nie mamy kamerek :/");
+            }
+            videoSource = new VideoCaptureDevice(videoDevicesList[1].MonikerString);
+            videoSource.NewFrame += new NewFrameEventHandler(video_NewFrame);
+            videoSource.Start();
+            Console.WriteLine("kamerka wybrana: " + videoDevicesList[1].Name);
+        }
+        public void video_NewFrame(object sender, NewFrameEventArgs eventArgs)
+        {
+            Bitmap bitmap = (Bitmap)eventArgs.Frame.Clone();
+            //=========================KONWERTER==============//
+            ImageArray = ImageToByteArray(bitmap, VideoQuality);   // OBRAZ JEST TU KOMPRESOWANY!
+            //================================================//
+            if (Send(ImageArray))
+            {
+                Console.WriteLine("Wyslano obrazk:" + ImageArray.Length + "bytes");
+            }
+            else
+            {
+                Console.WriteLine("Cos nie tak z obrazkiem!");
+            }
+        }
+        public byte[] ImageToByteArray(System.Drawing.Bitmap imageIn, long quality)
+        {
+            using (var ms = new MemoryStream())
+            {
+                EncoderParameter qualityParam = new EncoderParameter(System.Drawing.Imaging.Encoder.Quality, quality);
+                ImageCodecInfo imageCodec = ImageCodecInfo.GetImageEncoders().FirstOrDefault(o => o.FormatID == ImageFormat.Jpeg.Guid);
+                EncoderParameters parameters = new EncoderParameters(1);
+                parameters.Param[0] = qualityParam;
+                imageIn.Save(ms, imageCodec, parameters);
+                return ms.ToArray();
+            }
+        }
+        //===============================================================================================================//
     }
 }
