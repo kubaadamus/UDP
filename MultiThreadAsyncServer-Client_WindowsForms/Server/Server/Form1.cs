@@ -17,6 +17,7 @@ using System.Drawing.Imaging;
 using NAudio.Wave;
 using System.IO.Ports;
 using System.Management;
+
 namespace Server
 {
     public partial class Form1 : Form
@@ -27,6 +28,7 @@ namespace Server
 
         public Form1()
         {
+            Console.WriteLine("SERVER");
             InitializeComponent();
             Thread ListenThread = new Thread(Listen);
             ListenThread.Start();
@@ -49,10 +51,15 @@ namespace Server
             {
                 if (sock.Available > 0)
                 {
-                    byte[] ReceivedBytes = new byte[sock.Available];
-                    sock.Receive(ReceivedBytes);
+                    byte[] ReceivedBytes = new byte[1];
+                    try
+                    {
+                        ReceivedBytes = new byte[sock.Available];
+                        sock.Receive(ReceivedBytes);
+                    }
+                    catch (Exception){}
 
-                    if (ReceivedBytes.Length > 1000 && ReceivedBytes.Length !=17640)
+                    if (ReceivedBytes.Length > 1000 && ReceivedBytes.Length != 17640)
                     {
                         Thread ReceivedVideo = new Thread(() => ReceivedVideoHandler(ReceivedBytes));
                         ReceivedVideo.Start();
@@ -75,7 +82,11 @@ namespace Server
         {
             //HDNADLE DATA//
             //Console.WriteLine("Server odebral video od klienta");
-            this.Invoke(new ShowMessageMethod(ShowVideoMsg), receivedBytes);
+            try
+            {
+                this.Invoke(new ShowMessageMethod(ShowVideoMsg), receivedBytes);
+            }
+            catch (Exception){}
             //============//
         }
         void ReceivedAudioHandler(byte[] receivedBytes)
@@ -102,7 +113,7 @@ namespace Server
         }
         public void ShowSteeringMsg(byte[] msg)
         {
-            if(IsArduinoConnected)
+            if (IsArduinoConnected)
             {
                 WyslijDoArduino(Encoding.ASCII.GetString(msg).Replace("ARD", ""));
             }
@@ -115,10 +126,12 @@ namespace Server
         public long VideoQuality = 60L;
         public void Instantiate_Camera()
         {
+            int cam_count = 0;
             videoDevicesList = new FilterInfoCollection(FilterCategory.VideoInputDevice);
             foreach (FilterInfo videoDevice in videoDevicesList)
             {
-                Console.WriteLine(videoDevice.Name);
+                Console.WriteLine("Kamera["+cam_count+"]: "+ videoDevice.Name);
+                cam_count++;
             }
             if (videoDevicesList.Count > 0)
             {
@@ -128,16 +141,27 @@ namespace Server
             {
                 Console.WriteLine("Nie mamy kamerek :/");
             }
-            videoSource = new VideoCaptureDevice(videoDevicesList[0].MonikerString);
-            videoSource.NewFrame += new NewFrameEventHandler(video_NewFrame);
-            videoSource.Start();
-            Console.WriteLine("kamerka wybrana: " + videoDevicesList[0].Name);
+            try
+            {
+                Console.WriteLine("Wpisz 0 lub 1 i zatwierdz enterem zeby wybrac kamerke");
+                int camera = Int32.Parse(Console.ReadLine());
+                videoSource = new VideoCaptureDevice(videoDevicesList[camera].MonikerString);
+                videoSource.NewFrame += new NewFrameEventHandler(video_NewFrame);
+                videoSource.Start();
+                Console.WriteLine("kamerka wybrana: " + videoDevicesList[camera].Name);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("KUPA :3");
+            }
+
         }
         public void video_NewFrame(object sender, NewFrameEventArgs eventArgs)
         {
             Bitmap bitmap = (Bitmap)eventArgs.Frame.Clone();
+            Bitmap resized = new Bitmap(bitmap, new Size(bitmap.Width / 3, bitmap.Height / 3));
             //=========================KONWERTER==============//
-            ImageArray = ImageToByteArray(bitmap, VideoQuality);   // OBRAZ JEST TU KOMPRESOWANY!
+            ImageArray = ImageToByteArray(resized, VideoQuality);   // OBRAZ JEST TU KOMPRESOWANY!
             //================================================//
             if (Send(ImageArray))
             {
@@ -177,12 +201,14 @@ namespace Server
         public WaveFormat wf = new WaveFormat();
         public byte[] AudioArray; //Tablica do której recorder audio będzie wpychał bajty z mikrofonu;
         public bool MonitorAudioInput = false;
+        public bool SendAudio = true;
         //======================================== R E C O R D ==========================================================//
         public void StartRecordin()
         {
-            audioout.DesiredLatency = 100;
+            audioout.DesiredLatency = 10;
             waveInStream = new WaveInEvent();
             waveInStream.DeviceNumber = 0;
+            Console.WriteLine("encoding"+waveInStream.WaveFormat.Encoding);
             waveInStream.WaveFormat = new WaveFormat(44100, 2);
             waveInStream.DataAvailable += new EventHandler<WaveInEventArgs>(waveInStream_DataAvailable);
             waveInStream.StartRecording();
@@ -194,7 +220,7 @@ namespace Server
             {
                 Task.Factory.StartNew(() =>
                 {
-                    
+
 
                     //TUTAJ JEST MIEJSCE NA KONWERSJĘ!
                     //===================================
@@ -220,7 +246,10 @@ namespace Server
                     }
                 });
             }
-            Send(AudioArray);
+            if (SendAudio)
+            {
+                Send(AudioArray);
+            }
         }
         //========================================== P L A Y ========================================================//
         public void PlayReceivedAudio(byte[] ReceivedAudioArray)
@@ -248,11 +277,8 @@ namespace Server
             });
         }
         //======================================== A R D U I N O ====================================================//
-        public string StringOdKlienta = "";
         public string ArduinoPort = "COM3";
         public SerialPort serial1;
-        public string inString = "";
-        public string myString = "";
         public bool IsArduinoConnected = false;
         public string ConnectArduino()
         {
@@ -280,12 +306,13 @@ namespace Server
                             //=================================//
                             IsArduinoConnected = true;
                         }
-                        catch (ManagementException e){/* Do Nothing */}
+                        catch (ManagementException e) {/* Do Nothing */}
                         return deviceId;
                     }
                 }
             }
-            catch (Exception) {
+            catch (Exception)
+            {
                 Console.WriteLine("NIE MA ARDUINO :C ");
                 IsArduinoConnected = false;
             }
@@ -314,7 +341,7 @@ namespace Server
         }
         public void WyslijDoArduino(string inputString)
         {
-                serial1.Write(inputString);
+            serial1.Write(inputString);
         }
         public void port_OnReceiveDatazz(object sender, SerialDataReceivedEventArgs e)
         {
@@ -323,7 +350,7 @@ namespace Server
             serial1.Read(buf, 0, buf.Length);
             //Odeslij klientowi to co odpowiedzialo Arduino
             Send(buf);
-            myString = System.Text.Encoding.ASCII.GetString(buf).Trim();
+            string myString = System.Text.Encoding.ASCII.GetString(buf).Trim();
             Console.WriteLine("Odebrano z arduino: " + myString);
         }
     }

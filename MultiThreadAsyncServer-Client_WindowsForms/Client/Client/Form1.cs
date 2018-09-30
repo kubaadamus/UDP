@@ -15,7 +15,7 @@ using AForge.Video.DirectShow;
 using System.IO;
 using System.Drawing.Imaging;
 using NAudio.Wave;
-namespace Client
+namespace Client // uzywa wbudowanej kamerki laptopa
 {
     public partial class Form1 : Form
     {
@@ -25,6 +25,7 @@ namespace Client
 
         public Form1()
         {
+            Console.WriteLine("CLIENT");
             InitializeComponent();
             Thread ListenThread = new Thread(Listen);
             ListenThread.Start();
@@ -43,26 +44,26 @@ namespace Client
         }
         void Listen()
         {
-                while (true)
+            while (true)
+            {
+                byte[] receivedBytes = client.Receive(ref remoteip);
+                //Console.WriteLine(Encoding.ASCII.GetString(receivedBytes));
+                if (receivedBytes.Length > 1000 && receivedBytes.Length != 17640)
                 {
-                    byte[] receivedBytes = client.Receive(ref remoteip);
-                    //Console.WriteLine(Encoding.ASCII.GetString(receivedBytes));
-                    if (receivedBytes.Length > 1000 && receivedBytes.Length!=17640)
-                    {
-                        Thread ReceivedVideo = new Thread(() => ReceivedVideoHandler(receivedBytes));
-                        ReceivedVideo.Start();
-                    }
-                    else if (receivedBytes.Length == 17640)
-                    {
-                        Thread ReceivedAudio = new Thread(() => ReceivedAudioHandler(receivedBytes));
-                        ReceivedAudio.Start();
-                    }
-                    else if (receivedBytes.Length < 100)
-                    {
-                        Thread ReceivedSteering = new Thread(() => ReceivedSteeringHandler(receivedBytes));
-                        ReceivedSteering.Start();
-                    }
+                    Thread ReceivedVideo = new Thread(() => ReceivedVideoHandler(receivedBytes));
+                    ReceivedVideo.Start();
                 }
+                else if (receivedBytes.Length == 17640)
+                {
+                    Thread ReceivedAudio = new Thread(() => ReceivedAudioHandler(receivedBytes));
+                    ReceivedAudio.Start();
+                }
+                else if (receivedBytes.Length < 100)
+                {
+                    Thread ReceivedSteering = new Thread(() => ReceivedSteeringHandler(receivedBytes));
+                    ReceivedSteering.Start();
+                }
+            }
         }
         //============================= R E C E I V E D  D A T A =====================================//
         void ReceivedVideoHandler(byte[] receivedBytes)
@@ -73,7 +74,7 @@ namespace Client
             {
                 this.Invoke(new ShowMessageMethod(ShowVideoMsg), receivedBytes);
             }
-            catch (Exception){}
+            catch (Exception) { }
             //============//
         }
         void ReceivedAudioHandler(byte[] reveivedBytes)
@@ -84,7 +85,7 @@ namespace Client
             {
                 this.Invoke(new ShowMessageMethod(ShowAudioMsg), reveivedBytes);
             }
-            catch (Exception){}
+            catch (Exception) { }
             //============//
         }
         void ReceivedSteeringHandler(byte[] reveivedBytes)
@@ -95,7 +96,7 @@ namespace Client
             {
                 this.Invoke(new ShowMessageMethod(ShowSteeringMsg), reveivedBytes);
             }
-            catch (Exception){}
+            catch (Exception) { }
             //============//
         }
         public void ShowVideoMsg(byte[] msg)
@@ -108,19 +109,21 @@ namespace Client
         }
         public void ShowSteeringMsg(byte[] msg)
         {
-            textBox1.AppendText("ARD:"+Encoding.ASCII.GetString(msg));
+            textBox1.AppendText("ARD:" + Encoding.ASCII.GetString(msg));
         }
         //=============================== V I D E O  D E V I C E ==================================================//
         public FilterInfoCollection videoDevicesList;
         public IVideoSource videoSource;
         public byte[] ImageArray; // Tablica która zostanie zapełniona danymi z kamerki i wyslana w sieć
-        public long VideoQuality = 5L;
+        public long VideoQuality = 20L;
         public void Instantiate_Camera()
         {
+            int cam_count = 0;
             videoDevicesList = new FilterInfoCollection(FilterCategory.VideoInputDevice);
             foreach (FilterInfo videoDevice in videoDevicesList)
             {
-                Console.WriteLine(videoDevice.Name);
+                Console.WriteLine("Kamera[" + cam_count + "]: " + videoDevice.Name);
+                cam_count++;
             }
             if (videoDevicesList.Count > 0)
             {
@@ -130,14 +133,17 @@ namespace Client
             {
                 Console.WriteLine("Nie mamy kamerek :/");
             }
-            videoSource = new VideoCaptureDevice(videoDevicesList[1].MonikerString);
+            Console.WriteLine("Wpisz 0 lub 1 i zatwierdz enterem zeby wybrac kamerke");
+            int camera = Int32.Parse(Console.ReadLine());
+            videoSource = new VideoCaptureDevice(videoDevicesList[camera].MonikerString);
             videoSource.NewFrame += new NewFrameEventHandler(video_NewFrame);
             videoSource.Start();
-            Console.WriteLine("kamerka wybrana: " + videoDevicesList[1].Name);
+            Console.WriteLine("kamerka wybrana: " + videoDevicesList[camera].Name);
         }
         public void video_NewFrame(object sender, NewFrameEventArgs eventArgs)
         {
             Bitmap bitmap = (Bitmap)eventArgs.Frame.Clone();
+            Bitmap resized = new Bitmap(bitmap, new Size(bitmap.Width / 4, bitmap.Height / 4));
             //=========================KONWERTER==============//
             ImageArray = ImageToByteArray(bitmap, VideoQuality);   // OBRAZ JEST TU KOMPRESOWANY!
             //================================================//
@@ -170,7 +176,7 @@ namespace Client
                 Image image = imageConverter.ConvertFrom(byteArrayIn) as Image;
                 return image;
             }
-            catch (Exception){}
+            catch (Exception) { }
             return null;
         }
         //===============================A U D I O  D E V I C E===========================================//
@@ -179,30 +185,32 @@ namespace Client
         public WaveFormat wf = new WaveFormat();
         public byte[] AudioArray; //Tablica do której recorder audio będzie wpychał bajty z mikrofonu;
         public bool MonitorAudioInput = false;
+        public bool SendAudio = true;
         //===================================== P L A Y ========================================================//
         public void PlayReceivedAudio(byte[] ReceivedAudioArray)
-        {            Task.Factory.StartNew(() =>
-            {
-                audioout.Volume = 1.0f;
-                using (WaveOut audioout = new WaveOut())
-                using (MemoryStream ms = new MemoryStream(ReceivedAudioArray))
-                {
-                    ManualResetEvent semaphoreObject = new ManualResetEvent(false);
-                    audioout.DesiredLatency = 100;
-                    RawSourceWaveStream rsws = new RawSourceWaveStream(ms, wf);
-                    IWaveProvider provider = rsws;
-                    audioout.Init(provider);
-                    EventHandler<NAudio.Wave.StoppedEventArgs> handler = (o, k) =>
-                    {
-                        semaphoreObject.Set();
-                    };
-                    audioout.PlaybackStopped += handler;
-                    audioout.Play();
+        {
+            Task.Factory.StartNew(() =>
+   {
+       audioout.Volume = 1.0f;
+       using (WaveOut audioout = new WaveOut())
+       using (MemoryStream ms = new MemoryStream(ReceivedAudioArray))
+       {
+           ManualResetEvent semaphoreObject = new ManualResetEvent(false);
+           audioout.DesiredLatency = 100;
+           RawSourceWaveStream rsws = new RawSourceWaveStream(ms, wf);
+           IWaveProvider provider = rsws;
+           audioout.Init(provider);
+           EventHandler<NAudio.Wave.StoppedEventArgs> handler = (o, k) =>
+           {
+               semaphoreObject.Set();
+           };
+           audioout.PlaybackStopped += handler;
+           audioout.Play();
                     //while (audioout.PlaybackState != PlaybackState.Stopped) ;
                     semaphoreObject.WaitOne();
-                    audioout.PlaybackStopped -= handler;
-                }
-            });
+           audioout.PlaybackStopped -= handler;
+       }
+   });
         }
         //==================================== R E C O R D ==========================================================//
         public void StartRecordin()
@@ -243,7 +251,10 @@ namespace Client
                     }
                 });
             }
-            Send(AudioArray);
+            if(SendAudio)
+            {
+                Send(AudioArray);
+            }
         }
         //=================================== K E Y P R E S S ======================================================//
         const int WM_KEYDOWN = 0x100;
