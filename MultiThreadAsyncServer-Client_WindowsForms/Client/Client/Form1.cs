@@ -15,10 +15,8 @@ using AForge.Video.DirectShow;
 using System.IO;
 using System.Drawing.Imaging;
 using NAudio.Wave;
-
 namespace Client
 {
-
     public partial class Form1 : Form
     {
         public UdpClient client = new UdpClient(16010);
@@ -354,7 +352,5 @@ namespace Client
             } // But6
             return base.ProcessKeyPreview(ref m);
         }
-
-
     }
 }

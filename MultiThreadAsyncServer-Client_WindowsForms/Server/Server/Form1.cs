@@ -17,7 +17,6 @@ using System.Drawing.Imaging;
 using NAudio.Wave;
 using System.IO.Ports;
 using System.Management;
-
 namespace Server
 {
     public partial class Form1 : Form
@@ -103,7 +102,10 @@ namespace Server
         }
         public void ShowSteeringMsg(byte[] msg)
         {
-            WyslijDoArduino(Encoding.ASCII.GetString(msg).Replace("ARD", ""));
+            if(IsArduinoConnected)
+            {
+                WyslijDoArduino(Encoding.ASCII.GetString(msg).Replace("ARD", ""));
+            }
             textBox1.AppendText(Encoding.ASCII.GetString(msg) + Environment.NewLine);
         }
         //===================================== V I D E O  D E V I C E ==================================================//
@@ -251,6 +253,7 @@ namespace Server
         public SerialPort serial1;
         public string inString = "";
         public string myString = "";
+        public bool IsArduinoConnected = false;
         public string ConnectArduino()
         {
             ManagementScope connectionScope = new ManagementScope();
@@ -262,31 +265,32 @@ namespace Server
                 {
                     string desc = item["Description"].ToString();
                     string deviceId = item["DeviceID"].ToString();
-
                     Console.WriteLine("Wykryto: " + desc + " / " + deviceId);
-
                     if (desc.Contains("Arduino"))
                     {
                         Console.WriteLine(desc);
                         Console.WriteLine(deviceId);
                         ArduinoPort = deviceId;
                         Console.WriteLine("ustawiam port arduino na: " + ArduinoPort);
-
                         try
                         {
                             InicjalizujSerial();
                             //Przypisanie eventu do serial portu//
                             serial1.DataReceived += new SerialDataReceivedEventHandler(port_OnReceiveDatazz);
                             //=================================//
+                            IsArduinoConnected = true;
                         }
                         catch (ManagementException e){/* Do Nothing */}
                         return deviceId;
                     }
                 }
             }
-
-
-            catch (Exception) { Console.WriteLine("NIE MA ARDUINO :C "); }
+            catch (Exception) {
+                Console.WriteLine("NIE MA ARDUINO :C ");
+                IsArduinoConnected = false;
+            }
+            Console.WriteLine("NIE MA ARDUINO :C ");
+            IsArduinoConnected = false;
             return null;
         }
         public void InicjalizujSerial()
