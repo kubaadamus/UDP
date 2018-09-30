@@ -283,7 +283,7 @@ namespace UDPServer
             serial1.Write(inputString);
 
         }
-        public static void port_OnReceiveDatazz(object sender,                           SerialDataReceivedEventArgs e)
+        public static void port_OnReceiveDatazz(object sender,SerialDataReceivedEventArgs e)
         {
 
             byte[] buf = new byte[serial1.BytesToRead];

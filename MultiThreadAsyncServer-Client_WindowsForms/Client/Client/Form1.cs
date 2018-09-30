@@ -49,7 +49,7 @@ namespace Client
                 {
                     byte[] receivedBytes = client.Receive(ref remoteip);
                     //Console.WriteLine(Encoding.ASCII.GetString(receivedBytes));
-                    if (receivedBytes.Length > 30 && receivedBytes.Length!=17640)
+                    if (receivedBytes.Length > 1000 && receivedBytes.Length!=17640)
                     {
                         Thread ReceivedVideo = new Thread(() => ReceivedVideoHandler(receivedBytes));
                         ReceivedVideo.Start();
@@ -59,18 +59,18 @@ namespace Client
                         Thread ReceivedAudio = new Thread(() => ReceivedAudioHandler(receivedBytes));
                         ReceivedAudio.Start();
                     }
-                    else if (receivedBytes.Length == 10)
+                    else if (receivedBytes.Length < 100)
                     {
                         Thread ReceivedSteering = new Thread(() => ReceivedSteeringHandler(receivedBytes));
                         ReceivedSteering.Start();
                     }
                 }
         }
-        //================================================ R E C E I V E D  D A T A =====================================//
+        //============================= R E C E I V E D  D A T A =====================================//
         void ReceivedVideoHandler(byte[] receivedBytes)
         {
             //HDNADLE DATA//
-            Console.WriteLine("Klient otrzymał VIDEO od serwera");
+            //Console.WriteLine("Klient otrzymał VIDEO od serwera");
             try
             {
                 this.Invoke(new ShowMessageMethod(ShowVideoMsg), receivedBytes);
@@ -81,7 +81,7 @@ namespace Client
         void ReceivedAudioHandler(byte[] reveivedBytes)
         {
             //HDNADLE DATA//
-            Console.WriteLine("Klient otrzymał AUDIO od serwera");
+            //Console.WriteLine("Klient otrzymał AUDIO od serwera");
             try
             {
                 this.Invoke(new ShowMessageMethod(ShowAudioMsg), reveivedBytes);
@@ -92,7 +92,7 @@ namespace Client
         void ReceivedSteeringHandler(byte[] reveivedBytes)
         {
             //HDNADLE DATA//
-            Console.WriteLine("Klient otrzymał STEROWANIE od serwera");
+            //Console.WriteLine("Klient otrzymał STEROWANIE od serwera");
             try
             {
                 this.Invoke(new ShowMessageMethod(ShowSteeringMsg), reveivedBytes);
@@ -102,24 +102,17 @@ namespace Client
         }
         public void ShowVideoMsg(byte[] msg)
         {
-            textBox1.AppendText("Otrzymano video :D ");
-            textBox1.AppendText(Environment.NewLine);
             pictureBox1.Image = byteArrayToImage(msg);
         }
         public void ShowAudioMsg(byte[] msg)
         {
-            textBox1.AppendText("Otrzymano AUDIO :D ");
-            textBox1.AppendText(Environment.NewLine);
             PlayReceivedAudio(msg);
         }
         public void ShowSteeringMsg(byte[] msg)
         {
-            textBox1.AppendText("Otrzymano video :D ");
-            textBox1.AppendText(Environment.NewLine);
+            textBox1.AppendText("ARD:"+Encoding.ASCII.GetString(msg));
         }
-        //===============================================================================================================//
-
-        //===================================== V I D E O  D E V I C E ==================================================//
+        //=============================== V I D E O  D E V I C E ==================================================//
         public FilterInfoCollection videoDevicesList;
         public IVideoSource videoSource;
         public byte[] ImageArray; // Tablica która zostanie zapełniona danymi z kamerki i wyslana w sieć
@@ -152,11 +145,11 @@ namespace Client
             //================================================//
             if (Send(ImageArray))
             {
-                Console.WriteLine("Wyslano obrazk:" + ImageArray.Length + "bytes");
+                //Console.WriteLine("Wyslano obrazk:" + ImageArray.Length + "bytes");
             }
             else
             {
-                Console.WriteLine("Cos nie tak z obrazkiem!");
+                //Console.WriteLine("Cos nie tak z obrazkiem!");
             }
         }
         public byte[] ImageToByteArray(System.Drawing.Bitmap imageIn, long quality)
@@ -171,7 +164,7 @@ namespace Client
                 return ms.ToArray();
             }
         }
-        public static Image byteArrayToImage(byte[] byteArrayIn)
+        public Image byteArrayToImage(byte[] byteArrayIn)
         {
             try
             {
@@ -180,22 +173,17 @@ namespace Client
                 return image;
             }
             catch (Exception){}
-            Bitmap newie = new Bitmap(16, 16, PixelFormat.Alpha);
-            return newie;
+            return null;
         }
-        //===============================================================================================================//
-
-        //=====================================A U D I O  D E V I C E===========================================//
+        //===============================A U D I O  D E V I C E===========================================//
         public WaveInEvent waveInStream;
         public WaveOut audioout = new WaveOut();
         public WaveFormat wf = new WaveFormat();
         public byte[] AudioArray; //Tablica do której recorder audio będzie wpychał bajty z mikrofonu;
         public bool MonitorAudioInput = false;
-        //====================================== P L A Y ========================================================//
+        //===================================== P L A Y ========================================================//
         public void PlayReceivedAudio(byte[] ReceivedAudioArray)
-        {
-
-            Task.Factory.StartNew(() =>
+        {            Task.Factory.StartNew(() =>
             {
                 audioout.Volume = 1.0f;
                 using (WaveOut audioout = new WaveOut())
@@ -218,7 +206,7 @@ namespace Client
                 }
             });
         }
-        //================================================RECORD==========================================================//
+        //==================================== R E C O R D ==========================================================//
         public void StartRecordin()
         {
             audioout.DesiredLatency = 100;
@@ -235,11 +223,9 @@ namespace Client
             {
                 Task.Factory.StartNew(() =>
                 {
-
-
                     //TUTAJ JEST MIEJSCE NA KONWERSJĘ!
                     //===================================
-                    Console.WriteLine("Mam mikrofon" + AudioArray.Length);
+                    //Console.WriteLine("Mam mikrofon" + AudioArray.Length);
                     using (WaveOut audioout = new WaveOut())
                     using (MemoryStream ms = new MemoryStream(AudioArray))
                     {
@@ -254,14 +240,121 @@ namespace Client
                         };
                         audioout.PlaybackStopped += handler;
                         audioout.Play();
-                        //while (audioout.PlaybackState != PlaybackState.Stopped) ;
                         semaphoreObject.WaitOne();
                         audioout.PlaybackStopped -= handler;
-
                     }
                 });
             }
             Send(AudioArray);
         }
+        //=================================== K E Y P R E S S ======================================================//
+        const int WM_KEYDOWN = 0x100;
+        const int WM_KEYUP = 0x101;
+        bool W = true; bool S = true; bool A = true; bool D = true;
+        bool _But8 = true; bool _But5 = true; bool _But4 = true; bool _But6 = true;
+        protected override bool ProcessKeyPreview(ref Message m)
+        {
+            //========================================= RUCH PLATFORMY =======================================//
+            {
+                if (m.Msg == WM_KEYDOWN && (Keys)m.WParam == Keys.W && W)
+                {
+                    W = false; WBut.Enabled = false;
+                    byte[] data = Encoding.ASCII.GetBytes("ARD1");
+                    client.Send(data, data.Length, remoteip);
+                    return true;
+                }
+                else if (m.Msg == WM_KEYUP && (Keys)m.WParam == Keys.W)
+                {
+                    W = true; WBut.Enabled = true;
+                    byte[] data = Encoding.ASCII.GetBytes("ARD5");
+                    client.Send(data, data.Length, remoteip);
+                }
+            } // W
+            {
+                if (m.Msg == WM_KEYDOWN && (Keys)m.WParam == Keys.S && S)
+                {
+                    S = false; SBut.Enabled = false; byte[] data = Encoding.ASCII.GetBytes("ARD2"); client.Send(data, data.Length, remoteip);
+                    return true;
+                }
+                else if (m.Msg == WM_KEYUP && (Keys)m.WParam == Keys.S)
+                {
+                    S = true; SBut.Enabled = true; byte[] data = Encoding.ASCII.GetBytes("ARD6"); client.Send(data, data.Length, remoteip);
+                }
+            } // S
+            {
+                if (m.Msg == WM_KEYDOWN && (Keys)m.WParam == Keys.A && A)
+                {
+                    A = false; ABut.Enabled = false; byte[] data = Encoding.ASCII.GetBytes("ARD3"); client.Send(data, data.Length, remoteip);
+                    return true;
+                }
+                else if (m.Msg == WM_KEYUP && (Keys)m.WParam == Keys.A)
+                {
+                    A = true; ABut.Enabled = true; byte[] data = Encoding.ASCII.GetBytes("ARD7"); client.Send(data, data.Length, remoteip);
+                }
+            } // A
+            {
+                if (m.Msg == WM_KEYDOWN && (Keys)m.WParam == Keys.D && D)
+                {
+                    D = false; DBut.Enabled = false; byte[] data = Encoding.ASCII.GetBytes("ARD4"); client.Send(data, data.Length, remoteip);
+                    return true;
+                }
+                else if (m.Msg == WM_KEYUP && (Keys)m.WParam == Keys.D)
+                {
+                    D = true; DBut.Enabled = true; byte[] data = Encoding.ASCII.GetBytes("ARD8"); client.Send(data, data.Length, remoteip);
+                }
+            } // D
+              //========================================= RUCH GŁOWY =======================================//
+            {
+                if (m.Msg == WM_KEYDOWN && (Keys)m.WParam == Keys.NumPad8 && _But8)
+                {
+                    _But8 = false; But8.Enabled = false;
+                    byte[] data = Encoding.ASCII.GetBytes("ARD9");
+                    client.Send(data, data.Length, remoteip);
+                    return true;
+                }
+                else if (m.Msg == WM_KEYUP && (Keys)m.WParam == Keys.NumPad8)
+                {
+                    _But8 = true; But8.Enabled = true;
+                    byte[] data = Encoding.ASCII.GetBytes("ARD13");
+                    client.Send(data, data.Length, remoteip);
+                }
+            } // But8
+            {
+                if (m.Msg == WM_KEYDOWN && (Keys)m.WParam == Keys.NumPad5 && _But5)
+                {
+                    _But5 = false; But5.Enabled = false; byte[] data = Encoding.ASCII.GetBytes("ARD10"); client.Send(data, data.Length, remoteip);
+                    return true;
+                }
+                else if (m.Msg == WM_KEYUP && (Keys)m.WParam == Keys.NumPad5)
+                {
+                    _But5 = true; But5.Enabled = true; byte[] data = Encoding.ASCII.GetBytes("ARD14"); client.Send(data, data.Length, remoteip);
+                }
+            } // But5
+            {
+                if (m.Msg == WM_KEYDOWN && (Keys)m.WParam == Keys.NumPad4 && _But4)
+                {
+                    _But4 = false; But4.Enabled = false; byte[] data = Encoding.ASCII.GetBytes("ARD11"); client.Send(data, data.Length, remoteip);
+                    return true;
+                }
+                else if (m.Msg == WM_KEYUP && (Keys)m.WParam == Keys.NumPad4)
+                {
+                    _But4 = true; But4.Enabled = true; byte[] data = Encoding.ASCII.GetBytes("ARD15"); client.Send(data, data.Length, remoteip);
+                }
+            } // But4
+            {
+                if (m.Msg == WM_KEYDOWN && (Keys)m.WParam == Keys.NumPad6 && _But6)
+                {
+                    _But6 = false; But6.Enabled = false; byte[] data = Encoding.ASCII.GetBytes("ARD12"); client.Send(data, data.Length, remoteip);
+                    return true;
+                }
+                else if (m.Msg == WM_KEYUP && (Keys)m.WParam == Keys.NumPad6)
+                {
+                    _But6 = true; But6.Enabled = true; byte[] data = Encoding.ASCII.GetBytes("ARD16"); client.Send(data, data.Length, remoteip);
+                }
+            } // But6
+            return base.ProcessKeyPreview(ref m);
+        }
+
+
     }
 }

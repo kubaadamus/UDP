@@ -20,7 +20,6 @@ namespace ClientWinForms_Simple
     {
         public static int port_Video = 16010;
         public static int port_Audio = 16012;
-
         delegate void ShowMessageMethod(byte[] msg);
         UdpClient client = null;
         IPEndPoint endpoint = null;
@@ -116,13 +115,11 @@ namespace ClientWinForms_Simple
 
             return image;
         }
-
         private void button1_Click(object sender, EventArgs e)
         {
             byte[] data = Encoding.ASCII.GetBytes("cam0");
             client.Send(data, data.Length, endpoint);
         }
-
         private void button2_Click(object sender, EventArgs e)
         {
             byte[] data = Encoding.ASCII.GetBytes("cam1");
@@ -133,7 +130,6 @@ namespace ClientWinForms_Simple
             byte[] data = Encoding.ASCII.GetBytes("cam2");
             client.Send(data, data.Length, endpoint);
         }
-
         private void hScrollBar1_ValueChanged(object sender, EventArgs e)
         {
             DebugConsole.AppendText(hScrollBar1.Value.ToString());
@@ -142,18 +138,14 @@ namespace ClientWinForms_Simple
             client.Send(data, data.Length, endpoint);
 
         }
-
         private void Form1_Load(object sender, EventArgs e)
         {
 
         }
-
         public static WaveInEvent waveInStream;
         public static WaveOut audioout = new WaveOut();
         public static WaveFormat wf = new WaveFormat();
         //AUDIO
-
-
         public static void waveInStream_DataAvailable(byte[] ReceivedAudioArray)
         {
             Task.Factory.StartNew(() =>
@@ -178,33 +170,25 @@ namespace ClientWinForms_Simple
                 }
             });
         }
-
         private void PasswordButton_Click(object sender, EventArgs e)
         {
             byte[] data = Encoding.ASCII.GetBytes("abcde");
             client.Send(data, data.Length, endpoint);
         }
-
         private void ArduinoTestButton_Click(object sender, EventArgs e)
         {
             byte[] data = Encoding.ASCII.GetBytes("ARD2");
             client.Send(data, data.Length, endpoint);
         }
-
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
             Console.WriteLine("klawisz");
         }
-
-
         //PRZETWARZANIE KLAWISZY
-
         const int WM_KEYDOWN = 0x100;
         const int WM_KEYUP = 0x101;
-
         protected override bool ProcessKeyPreview(ref Message m)
         {
-
             //========================================= RUCH PLATFORMY =======================================//
             {
                 if (m.Msg == WM_KEYDOWN && (Keys)m.WParam == Keys.W && W)

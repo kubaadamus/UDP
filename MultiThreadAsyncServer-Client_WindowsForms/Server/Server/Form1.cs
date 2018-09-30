@@ -15,6 +15,8 @@ using AForge.Video.DirectShow;
 using System.IO;
 using System.Drawing.Imaging;
 using NAudio.Wave;
+using System.IO.Ports;
+using System.Management;
 
 namespace Server
 {
@@ -30,7 +32,8 @@ namespace Server
             Thread ListenThread = new Thread(Listen);
             ListenThread.Start();
             Instantiate_Camera();
-            //StartRecordin();
+            StartRecordin();
+            ConnectArduino();
         }
         public bool Send(byte[] DataForClient)
         {
@@ -50,7 +53,7 @@ namespace Server
                     byte[] ReceivedBytes = new byte[sock.Available];
                     sock.Receive(ReceivedBytes);
 
-                    if (ReceivedBytes.Length > 30 && ReceivedBytes.Length !=17640)
+                    if (ReceivedBytes.Length > 1000 && ReceivedBytes.Length !=17640)
                     {
                         Thread ReceivedVideo = new Thread(() => ReceivedVideoHandler(ReceivedBytes));
                         ReceivedVideo.Start();
@@ -60,7 +63,7 @@ namespace Server
                         Thread ReceivedAudio = new Thread(() => ReceivedAudioHandler(ReceivedBytes));
                         ReceivedAudio.Start();
                     }
-                    else if (ReceivedBytes.Length == 10)
+                    else if (Encoding.ASCII.GetString(ReceivedBytes).StartsWith("ARD"))
                     {
                         Thread ReceivedSteering = new Thread(() => ReceivedSteeringHandler(ReceivedBytes));
                         ReceivedSteering.Start();
@@ -68,47 +71,41 @@ namespace Server
                 }
             }
         }
-        //================================================ R E C E I V E D  D A T A =====================================//
+        //==================================== R E C E I V E D  D A T A =====================================//
         void ReceivedVideoHandler(byte[] receivedBytes)
         {
             //HDNADLE DATA//
-            Console.WriteLine("Server odebral video od klienta");
+            //Console.WriteLine("Server odebral video od klienta");
             this.Invoke(new ShowMessageMethod(ShowVideoMsg), receivedBytes);
             //============//
         }
-        void ReceivedAudioHandler(byte[] reveivedBytes)
+        void ReceivedAudioHandler(byte[] receivedBytes)
         {
             //HDNADLE DATA//
-            Console.WriteLine("Server odebral audio od klienta");
-            this.Invoke(new ShowMessageMethod(ShowAudioMsg), reveivedBytes);
+            //Console.WriteLine("Server odebral audio od klienta");
+            this.Invoke(new ShowMessageMethod(ShowAudioMsg), receivedBytes);
             //============//
         }
-        void ReceivedSteeringHandler(byte[] reveivedBytes)
+        void ReceivedSteeringHandler(byte[] receivedBytes)
         {
             //HDNADLE DATA//
-            Console.WriteLine("Server odebral sterowanie od klienta");
-            this.Invoke(new ShowMessageMethod(ShowSteeringMsg), reveivedBytes);
+            Console.WriteLine("Komenda od klienta: " + Encoding.ASCII.GetString(receivedBytes));
+            this.Invoke(new ShowMessageMethod(ShowSteeringMsg), receivedBytes);
             //============//
         }
         public void ShowVideoMsg(byte[] msg)
         {
-            textBox1.AppendText("Otrzymano video :D ");
-            textBox1.AppendText(Environment.NewLine);
             pictureBox1.Image = byteArrayToImage(msg);
         }
         public void ShowAudioMsg(byte[] msg)
         {
-            textBox1.AppendText("Otrzymano AUDIO :D ");
-            textBox1.AppendText(Environment.NewLine);
             PlayReceivedAudio(msg);
         }
         public void ShowSteeringMsg(byte[] msg)
         {
-            textBox1.AppendText("Otrzymano STEROWANIE :D ");
-            textBox1.AppendText(Environment.NewLine);
+            WyslijDoArduino(Encoding.ASCII.GetString(msg).Replace("ARD", ""));
+            textBox1.AppendText(Encoding.ASCII.GetString(msg) + Environment.NewLine);
         }
-        //===============================================================================================================//
-
         //===================================== V I D E O  D E V I C E ==================================================//
         public FilterInfoCollection videoDevicesList;
         public IVideoSource videoSource;
@@ -142,11 +139,11 @@ namespace Server
             //================================================//
             if (Send(ImageArray))
             {
-                Console.WriteLine("Wyslano obrazk:" + ImageArray.Length + "bytes");
+                //Console.WriteLine("Wyslano obrazk:" + ImageArray.Length + "bytes");
             }
             else
             {
-                Console.WriteLine("Cos nie tak z obrazkiem!");
+                //Console.WriteLine("Cos nie tak z obrazkiem!");
             }
         }
         public byte[] ImageToByteArray(System.Drawing.Bitmap imageIn, long quality)
@@ -161,22 +158,24 @@ namespace Server
                 return ms.ToArray();
             }
         }
-        public static Image byteArrayToImage(byte[] byteArrayIn)
+        public Image byteArrayToImage(byte[] byteArrayIn)
         {
-            ImageConverter imageConverter = new System.Drawing.ImageConverter();
-            Image image = imageConverter.ConvertFrom(byteArrayIn) as Image;
-
-            return image;
+            try
+            {
+                ImageConverter imageConverter = new System.Drawing.ImageConverter();
+                Image image = imageConverter.ConvertFrom(byteArrayIn) as Image;
+                return image;
+            }
+            catch (Exception) { }
+            return null;
         }
-        //===============================================================================================================//
-
         //=====================================A U D I O  D E V I C E ===================================================//
         public WaveInEvent waveInStream;
         public WaveOut audioout = new WaveOut();
         public WaveFormat wf = new WaveFormat();
         public byte[] AudioArray; //Tablica do której recorder audio będzie wpychał bajty z mikrofonu;
         public bool MonitorAudioInput = false;
-        //================================================RECORD==========================================================//
+        //======================================== R E C O R D ==========================================================//
         public void StartRecordin()
         {
             audioout.DesiredLatency = 100;
@@ -197,7 +196,7 @@ namespace Server
 
                     //TUTAJ JEST MIEJSCE NA KONWERSJĘ!
                     //===================================
-                    Console.WriteLine("Mam mikrofon" + AudioArray.Length);
+                    //Console.WriteLine("Mam mikrofon" + AudioArray.Length);
                     using (WaveOut audioout = new WaveOut())
                     using (MemoryStream ms = new MemoryStream(AudioArray))
                     {
@@ -221,10 +220,9 @@ namespace Server
             }
             Send(AudioArray);
         }
-        //====================================== P L A Y ========================================================//
+        //========================================== P L A Y ========================================================//
         public void PlayReceivedAudio(byte[] ReceivedAudioArray)
         {
-
             Task.Factory.StartNew(() =>
             {
                 audioout.Volume = 1.0f;
@@ -242,11 +240,87 @@ namespace Server
                     };
                     audioout.PlaybackStopped += handler;
                     audioout.Play();
-                    //while (audioout.PlaybackState != PlaybackState.Stopped) ;
                     semaphoreObject.WaitOne();
                     audioout.PlaybackStopped -= handler;
                 }
             });
+        }
+        //======================================== A R D U I N O ====================================================//
+        public string StringOdKlienta = "";
+        public string ArduinoPort = "COM3";
+        public SerialPort serial1;
+        public string inString = "";
+        public string myString = "";
+        public string ConnectArduino()
+        {
+            ManagementScope connectionScope = new ManagementScope();
+            SelectQuery serialQuery = new SelectQuery("SELECT * FROM Win32_SerialPort");
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher(connectionScope, serialQuery);
+            try
+            {
+                foreach (ManagementObject item in searcher.Get())
+                {
+                    string desc = item["Description"].ToString();
+                    string deviceId = item["DeviceID"].ToString();
+
+                    Console.WriteLine("Wykryto: " + desc + " / " + deviceId);
+
+                    if (desc.Contains("Arduino"))
+                    {
+                        Console.WriteLine(desc);
+                        Console.WriteLine(deviceId);
+                        ArduinoPort = deviceId;
+                        Console.WriteLine("ustawiam port arduino na: " + ArduinoPort);
+
+                        try
+                        {
+                            InicjalizujSerial();
+                            //Przypisanie eventu do serial portu//
+                            serial1.DataReceived += new SerialDataReceivedEventHandler(port_OnReceiveDatazz);
+                            //=================================//
+                        }
+                        catch (ManagementException e){/* Do Nothing */}
+                        return deviceId;
+                    }
+                }
+            }
+
+
+            catch (Exception) { Console.WriteLine("NIE MA ARDUINO :C "); }
+            return null;
+        }
+        public void InicjalizujSerial()
+        {
+
+            serial1 = new SerialPort();
+            serial1.PortName = ArduinoPort;
+            serial1.Parity = Parity.None;
+            serial1.BaudRate = 115200;
+            serial1.DataBits = 8;
+            serial1.StopBits = StopBits.One;
+            if (!serial1.IsOpen && serial1 != null)
+            {
+                serial1.Open();
+                serial1.ReadTimeout = 30;
+                serial1.WriteTimeout = 30;
+            }
+            serial1.BaseStream.Flush();
+            serial1.DiscardInBuffer();
+            serial1.DiscardOutBuffer();
+        }
+        public void WyslijDoArduino(string inputString)
+        {
+                serial1.Write(inputString);
+        }
+        public void port_OnReceiveDatazz(object sender, SerialDataReceivedEventArgs e)
+        {
+
+            byte[] buf = new byte[serial1.BytesToRead];
+            serial1.Read(buf, 0, buf.Length);
+            //Odeslij klientowi to co odpowiedzialo Arduino
+            Send(buf);
+            myString = System.Text.Encoding.ASCII.GetString(buf).Trim();
+            Console.WriteLine("Odebrano z arduino: " + myString);
         }
     }
 }
